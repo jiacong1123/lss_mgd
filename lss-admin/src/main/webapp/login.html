@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>登录测试</title>
+<style type="text/css">
+div{margin: 10px;}
+</style>
+</head>
+<script type="text/javascript">
+	function fn1() {
+		//发送异步请求
+		//1.创建ajax引擎对象----所有操作都是由ajax引擎完成
+
+		var xmlHttp = new XMLHttpRequest();
+
+		//2.为引擎对象绑定监听事件
+
+		xmlHttp.onreadystatechange = function() {
+			//当状态变化时处理的事情
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+				//5.接收响应信息
+				var data = xmlHttp.responseText;
+
+				alert(data);
+			}
+
+		}
+		
+		xmlHttp.withCredentials = true; //支持跨域发送cookies
+		//3.绑定服务器地址 
+		//第一个参数：请求方式GET/POST 
+		//第二个参数：后台服务器地址 
+		//第三个参数：是否是异步 true--异步   false--同步
+		xmlHttp.open("GET", "http://adminapi.lesasa.com/lss-admin/wx/getAdmin",
+				true);
+		//4.发送请求
+		xmlHttp.send();
+	}
+	
+	function bindLogin() {
+		var a=new Date();//当前时间
+		var atime=a.valueOf();//当前时间的时分秒 时间戳
+		a.setHours(0);//设置时为0
+		a.setMinutes(0);//设置分为0
+		a.setSeconds(0);//设置秒为0
+		a.setMilliseconds(0);//设置毫秒为0
+		
+		alert("含时分秒毫秒的时间戳："+atime+"，不含时分秒毫秒的时间戳："+a.valueOf());
+		return ;
+		//发送异步请求
+		//1.创建ajax引擎对象----所有操作都是由ajax引擎完成
+		var xmlHttp = new XMLHttpRequest();
+		//2.为引擎对象绑定监听事件
+		xmlHttp.onreadystatechange = function() {
+			//当状态变化时处理的事情
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+				//5.接收响应信息
+				var data = xmlHttp.responseText;
+				alert(data);
+			}
+		}
+		xmlHttp.withCredentials = true; //支持跨域发送cookies
+		//3.绑定服务器地址 
+		//第一个参数：请求方式GET/POST 
+		//第二个参数：后台服务器地址 
+		//第三个参数：是否是异步 true--异步   false--同步
+		xmlHttp.open("POST", "http://adminapi.lesasa.com/lss-admin/admin/login",
+				true);
+		//注意要在open后才能调用setRequestHeader
+		xmlHttp.setRequestHeader("content-type","application/json");
+		var gdcaptcha=document.getElementById("gdcaptcha").value;
+		//4.发送请求
+		xmlHttp.send('{"name": "admin", "password": "123456", "code": "'+gdcaptcha+'"}');
+	}
+</script>
+<body>
+	<div>
+		<form action="/api/hx/login.do" method="post">
+			<div>
+				时间戳：<input name="timestamp" type="text" value="1345555555" />
+			</div>
+			<div>
+				用户名：<input name="loginName" type="text" value="ymkq" />
+			</div>
+			<div>
+				密码：<input name="pwd" type="text"
+					value="dc483e80a7a0bd9ef71d8cf973673924" />
+			</div>
+			<div>
+				验证码：<input name="captcha" type="text" />
+			</div>
+			<img src="/api/servlet/validateCodeServlet" /> <input type="submit"
+				value="提交">
+		</form>
+	</div>
+	<div> 
+		<input type="submit" value="跨域AJAX提交" onclick="fn1();">
+		
+		<form action="http://adminapi.lesasa.com/lss-admin/wx/getAdmin">
+			<input type="submit" value="直接請求">
+		</form>
+	</div>
+	
+	<div> 
+		工单验证码:<img src="http://adminapi.lesasa.com/lss-admin/admin/imgcode?0.5996196408044443" />
+		验证码：<input id="gdcaptcha" name="gdcaptcha" type="text" />
+		<input type="submit" value="未綁定登录" onclick="bindLogin();">
+	</div>
+</body>
+</html>

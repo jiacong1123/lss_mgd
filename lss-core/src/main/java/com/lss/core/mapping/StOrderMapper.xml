@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lss.core.dao.IStOrderDao">
+  <resultMap id="BaseResultMap" type="com.lss.core.pojo.StOrder">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="adminid" jdbcType="INTEGER" property="adminid" />
+    <result column="adminname" jdbcType="VARCHAR" property="adminname" />
+    <result column="st_date" jdbcType="TIMESTAMP" property="stDate" />
+    <result column="allot_user_count" jdbcType="INTEGER" property="allotUserCount" />
+    <result column="reserve_user_count" jdbcType="INTEGER" property="reserveUserCount" />
+    <result column="his_reserve_count" jdbcType="INTEGER" property="hisReserveCount" />
+    <result column="all_reserve_count" jdbcType="INTEGER" property="allReserveCount" />
+    <result column="mon_reserve_rate" jdbcType="DECIMAL" property="monReserveRate" />
+    <result column="all_reserve_rate" jdbcType="DECIMAL" property="allReserveRate" />
+    <result column="big_deal_count" jdbcType="INTEGER" property="bigDealCount" />
+    <result column="big_deal_rate" jdbcType="DECIMAL" property="bigDealRate" />
+    <result column="all_deal_amt" jdbcType="BIGINT" property="allDealAmt" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, adminid, adminname, st_date, allot_user_count, reserve_user_count, his_reserve_count, 
+    all_reserve_count, mon_reserve_rate, all_reserve_rate, big_deal_count, big_deal_rate, 
+    all_deal_amt, create_date, update_date, remark
+  </sql>
+
+	<resultMap id="FindResultMap"
+		type="com.lss.core.dto.StOrderDto" extends="BaseResultMap"></resultMap>
+	<sql id="findPage_condition">
+		<where>
+			<!-- 查询条件根据业务需求自由添加 -->
+			<if test="id!=null">
+				<![CDATA[and id =#{id}]]>
+			</if>
+			<if test="adminids != null and adminids.size()>0">
+				and adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+			</if>
+			<if test="adminName!= null and adminName!='' " >
+	        		and  adminname like CONCAT('%',#{adminName,jdbcType=VARCHAR},'%' )
+	      	</if>
+	      	<if test="startDateStr != null and startDateStr!='' ">
+				AND DATE_FORMAT(st_date,'%Y-%m') &gt;= #{startDateStr}
+			</if>
+			<if test="endDateStr != null and endDateStr!=''  ">
+				AND DATE_FORMAT(st_date,'%Y-%m') &lt;= #{endDateStr}
+			</if>
+		</where>
+	</sql>
+	<!-- 不分页查询 -->
+	<select id="findStOrders" resultMap="FindResultMap"
+		parameterType="com.lss.core.dto.FindStOrderPage">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_st_order
+		<include refid="findPage_condition" />
+
+	</select>
+	<!-- 分页查询 -->
+	<select id="findStOrderPage" resultMap="FindResultMap"
+		parameterType="com.lss.core.dto.FindStOrderPage">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_st_order
+		<include refid="findPage_condition" />
+		order by st_date asc 
+		<if test="page!=0 " >
+			limit ${index} , ${limit}
+		</if>
+	</select>
+	<!-- 查询总数 -->
+	<select id="findStOrderPageCount" resultType="int"
+		parameterType="com.lss.core.dto.FindStOrderPage">
+		select count(*)
+		FROM ls_st_order
+		<include refid="findPage_condition" />
+	</select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ls_st_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ls_st_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lss.core.pojo.StOrder">
+    insert into ls_st_order (id, adminid, adminname, 
+      st_date, allot_user_count, reserve_user_count, 
+      his_reserve_count, all_reserve_count, mon_reserve_rate, 
+      all_reserve_rate, big_deal_count, big_deal_rate, 
+      all_deal_amt, create_date, update_date, 
+      remark)
+    values (#{id,jdbcType=INTEGER}, #{adminid,jdbcType=INTEGER}, #{adminname,jdbcType=VARCHAR}, 
+      #{stDate,jdbcType=TIMESTAMP}, #{allotUserCount,jdbcType=INTEGER}, #{reserveUserCount,jdbcType=INTEGER}, 
+      #{hisReserveCount,jdbcType=INTEGER}, #{allReserveCount,jdbcType=INTEGER}, #{monReserveRate,jdbcType=DECIMAL}, 
+      #{allReserveRate,jdbcType=DECIMAL}, #{bigDealCount,jdbcType=INTEGER}, #{bigDealRate,jdbcType=DECIMAL}, 
+      #{allDealAmt,jdbcType=BIGINT}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lss.core.pojo.StOrder">
+    insert into ls_st_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="adminid != null">
+        adminid,
+      </if>
+      <if test="adminname != null">
+        adminname,
+      </if>
+      <if test="stDate != null">
+        st_date,
+      </if>
+      <if test="allotUserCount != null">
+        allot_user_count,
+      </if>
+      <if test="reserveUserCount != null">
+        reserve_user_count,
+      </if>
+      <if test="hisReserveCount != null">
+        his_reserve_count,
+      </if>
+      <if test="allReserveCount != null">
+        all_reserve_count,
+      </if>
+      <if test="monReserveRate != null">
+        mon_reserve_rate,
+      </if>
+      <if test="allReserveRate != null">
+        all_reserve_rate,
+      </if>
+      <if test="bigDealCount != null">
+        big_deal_count,
+      </if>
+      <if test="bigDealRate != null">
+        big_deal_rate,
+      </if>
+      <if test="allDealAmt != null">
+        all_deal_amt,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="adminid != null">
+        #{adminid,jdbcType=INTEGER},
+      </if>
+      <if test="adminname != null">
+        #{adminname,jdbcType=VARCHAR},
+      </if>
+      <if test="stDate != null">
+        #{stDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="allotUserCount != null">
+        #{allotUserCount,jdbcType=INTEGER},
+      </if>
+      <if test="reserveUserCount != null">
+        #{reserveUserCount,jdbcType=INTEGER},
+      </if>
+      <if test="hisReserveCount != null">
+        #{hisReserveCount,jdbcType=INTEGER},
+      </if>
+      <if test="allReserveCount != null">
+        #{allReserveCount,jdbcType=INTEGER},
+      </if>
+      <if test="monReserveRate != null">
+        #{monReserveRate,jdbcType=DECIMAL},
+      </if>
+      <if test="allReserveRate != null">
+        #{allReserveRate,jdbcType=DECIMAL},
+      </if>
+      <if test="bigDealCount != null">
+        #{bigDealCount,jdbcType=INTEGER},
+      </if>
+      <if test="bigDealRate != null">
+        #{bigDealRate,jdbcType=DECIMAL},
+      </if>
+      <if test="allDealAmt != null">
+        #{allDealAmt,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lss.core.pojo.StOrder">
+    update ls_st_order
+    <set>
+      <if test="adminid != null">
+        adminid = #{adminid,jdbcType=INTEGER},
+      </if>
+      <if test="adminname != null">
+        adminname = #{adminname,jdbcType=VARCHAR},
+      </if>
+      <if test="stDate != null">
+        st_date = #{stDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="allotUserCount != null">
+        allot_user_count = #{allotUserCount,jdbcType=INTEGER},
+      </if>
+      <if test="reserveUserCount != null">
+        reserve_user_count = #{reserveUserCount,jdbcType=INTEGER},
+      </if>
+      <if test="hisReserveCount != null">
+        his_reserve_count = #{hisReserveCount,jdbcType=INTEGER},
+      </if>
+      <if test="allReserveCount != null">
+        all_reserve_count = #{allReserveCount,jdbcType=INTEGER},
+      </if>
+      <if test="monReserveRate != null">
+        mon_reserve_rate = #{monReserveRate,jdbcType=DECIMAL},
+      </if>
+      <if test="allReserveRate != null">
+        all_reserve_rate = #{allReserveRate,jdbcType=DECIMAL},
+      </if>
+      <if test="bigDealCount != null">
+        big_deal_count = #{bigDealCount,jdbcType=INTEGER},
+      </if>
+      <if test="bigDealRate != null">
+        big_deal_rate = #{bigDealRate,jdbcType=DECIMAL},
+      </if>
+      <if test="allDealAmt != null">
+        all_deal_amt = #{allDealAmt,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lss.core.pojo.StOrder">
+    update ls_st_order
+    set adminid = #{adminid,jdbcType=INTEGER},
+      adminname = #{adminname,jdbcType=VARCHAR},
+      st_date = #{stDate,jdbcType=TIMESTAMP},
+      allot_user_count = #{allotUserCount,jdbcType=INTEGER},
+      reserve_user_count = #{reserveUserCount,jdbcType=INTEGER},
+      his_reserve_count = #{hisReserveCount,jdbcType=INTEGER},
+      all_reserve_count = #{allReserveCount,jdbcType=INTEGER},
+      mon_reserve_rate = #{monReserveRate,jdbcType=DECIMAL},
+      all_reserve_rate = #{allReserveRate,jdbcType=DECIMAL},
+      big_deal_count = #{bigDealCount,jdbcType=INTEGER},
+      big_deal_rate = #{bigDealRate,jdbcType=DECIMAL},
+      all_deal_amt = #{allDealAmt,jdbcType=BIGINT},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+	<!-- 方案二 1.月客户数统计，只统计了有分配的电销员 -->
+  <insert id="batchAddMonthAllotUserCount" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		INSERT INTO ls_st_order(adminid,adminname,st_date,allot_user_count,create_date)
+
+		SELECT t.adminid,t1.`name` as adminname,#{stDate} as st_date, COUNT(*) as allot_user_count ,SYSDATE() as create_date from ls_workorder t 
+		JOIN ls_admin t1 on t.adminid=t1.adminid
+		where 
+		DATE_FORMAT(t.allottime,'%Y%m') = #{stDateStr}  and t.`status`!=0 
+		AND CONCAT(t.adminid,DATE_FORMAT(t.allottime,'%Y%m')) NOT IN (
+			SELECT CONCAT(sod.adminid,DATE_FORMAT(sod.st_date,'%Y%m')) from ls_st_order sod where  DATE_FORMAT(sod.st_date,'%Y%m')=#{stDateStr}
+		)
+		GROUP BY t.adminid 
+		]]>
+  </insert>
+  
+  	<!-- 方案一 0 当月电销人员 先给所有电销员 初始一条成交统计数据  -->
+  <insert id="batchAddStOrder" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		INSERT INTO ls_st_order(adminid,adminname,st_date,create_date)
+
+		SELECT a.adminid,a.`name` as adminname,#{stDate} as st_date,SYSDATE() as create_date from  
+		ls_admin a   JOIN ls_admin_role ar  on a.adminid=ar.adminid
+		JOIN ls_role r  ON ar.roleid=r.roleid  AND r.roleid=3 
+		AND CONCAT(a.adminid,#{stDateStr}) NOT IN ( 
+		SELECT CONCAT(sod.adminid,DATE_FORMAT(sod.st_date,'%Y%m')) from ls_st_order sod where  DATE_FORMAT(sod.st_date,'%Y%m')=#{stDateStr}
+		) ;
+		]]>
+  </insert>
+  
+   <!--方案一 1.更新月客户数统计 -->
+  <update id="batchAddMonthAllotUserCount2" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	UPDATE ls_st_order t1 ,(
+			SELECT t.adminid , COUNT(*) as allot_user_count   from ls_workorder t where DATE_FORMAT(t.allottime,'%Y%m') = #{stDateStr}  and t.`status`!=0 GROUP BY t.adminid 
+			) t2 SET t1.allot_user_count= t2.allot_user_count where t1.adminid=t2.adminid AND DATE_FORMAT(t1.st_date,'%Y%m') = #{stDateStr}
+		]]>
+  </update>
+  	
+  <!-- 2.新客到店数 -->
+  <update id="batchAddMonthReserveUserCount" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	UPDATE ls_st_order t1 ,(
+				SELECT COUNT(*) reserve_user_count,t.adminid from ls_workorder t where 
+				DATE_FORMAT(t.reservedate,'%Y%m') = #{stDateStr} and t.`status` and DATE_FORMAT(t.allottime,'%Y%m')=#{stDateStr}  in (3,4) GROUP BY t.adminid 
+			) t2 SET t1.reserve_user_count= t2.reserve_user_count where t1.adminid=t2.adminid AND DATE_FORMAT(t1.st_date,'%Y%m') = #{stDateStr}
+		]]>
+  </update>
+  
+  <!-- 3.总到店数 -->
+  <update id="batchAddMonthAllReserveCount" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	UPDATE ls_st_order t1 ,(
+				SELECT COUNT(*) all_reserve_count,t.adminid from ls_workorder t where 
+				 DATE_FORMAT(t.reservedate,'%Y%m') = #{stDateStr} and t.`status` in (3,4) GROUP BY t.adminid 
+			) t2 SET t1.all_reserve_count= t2.all_reserve_count where t1.adminid=t2.adminid AND DATE_FORMAT(t1.st_date,'%Y%m') = #{stDateStr}
+		]]>
+  </update>	
+  
+  <!-- 4.历史到店数 -->
+  <update id="batchAddMonthHisReserveCount" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	UPDATE ls_st_order set his_reserve_count =all_reserve_count-reserve_user_count where DATE_FORMAT(st_date,'%Y%m') = #{stDateStr}
+		]]>
+  </update>		
+  
+   <!-- 5.新客到店率=新客到店数÷月客户数 -->
+  <update id="batchAddMonthMonReserveRate" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	UPDATE ls_st_order set mon_reserve_rate =reserve_user_count/allot_user_count where DATE_FORMAT(st_date,'%Y%m') = #{stDateStr} AND allot_user_count>0
+		]]>
+  </update>	
+  
+     <!-- 6.综合到店率=总到店数÷月客户数（本月分配的客户） -->
+  <update id="batchAddMonthAllReserveRate" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	UPDATE ls_st_order set all_reserve_rate =all_reserve_count/allot_user_count where DATE_FORMAT(st_date,'%Y%m') = #{stDateStr} AND allot_user_count>0
+ 
+		]]>
+  </update>	
+  <!-- 7.大项（正畸1、种植2、修复140）+实付金额大于1000+状态（已成交） -->
+  <update id="batchAddMonthBigDealCount" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	UPDATE ls_st_order t1 ,(
+				SELECT COUNT(*) big_deal_count,g.adminid from (
+					SELECT sum(p.amount) big_deal_amt,t.adminid,t.orderno from ls_workorder t
+					JOIN ls_order_pay p on t.orderno=p.orderno where 
+					 DATE_FORMAT(p.pay_time,'%Y%m')=#{stDateStr} and  t.`status`=4  and t.projectid in(1,2,140) GROUP BY t.adminid,t.orderno
+				) g where g.big_deal_amt >=100000 GROUP BY g.adminid
+			
+			) t2 SET t1.big_deal_count= t2.big_deal_count where t1.adminid=t2.adminid AND DATE_FORMAT(t1.st_date,'%Y%m') = #{stDateStr} 
+			 
+		]]>
+  </update>	
+  
+  <!-- 8.（大项）成交率=大项目成交数÷总到店数 -->
+  <update id="batchAddMonthBigDealRate" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	 UPDATE ls_st_order set big_deal_rate =big_deal_count/all_reserve_count where DATE_FORMAT(st_date,'%Y%m') = #{stDateStr}  AND all_reserve_count>0;
+		]]>
+  </update>	
+  
+  <!-- 9.业绩完成=状态（已完成）+全部项目实收金额（大项目+其他） -->
+  <update id="batchAddMonthAllDealAmt" parameterType="com.lss.core.dto.StOrderDto">
+  		<![CDATA[
+  		 	 UPDATE ls_st_order t1 ,(
+  		 	 	SELECT sum(p.amount) all_deal_amt,t.adminid from ls_workorder t
+				JOIN ls_order_pay p on t.orderno=p.orderno where 
+				DATE_FORMAT(p.pay_time,'%Y%m')=#{stDateStr} and  t.`status`=4   GROUP BY t.adminid 
+			)t2 SET t1.all_deal_amt= t2.all_deal_amt where t1.adminid=t2.adminid AND DATE_FORMAT(t1.st_date,'%Y%m') = #{stDateStr} AND t2.all_deal_amt is not NULL
+		]]>
+  </update>	  
+  	
+  	<!-- 1.月客户数统计 查询 -->
+  <select id="findMonthAllotUserCount"  resultMap="FindResultMap" parameterType="com.lss.core.dto.FindStOrderPage">
+  		<![CDATA[
+		SELECT  COUNT(*) as allot_user_count ,t.adminid  from ls_workorder t  
+		where 
+		DATE_FORMAT(t.allottime,'%Y-%m') = #{stDateStr}  and t.`status`!=0 
+		]]>
+		<if test="adminids != null and adminids.size()>0">
+				and t.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		GROUP BY t.adminid 
+  </select>
+	<!-- 2.新客到店数(当月分配，当月到店的客户) -->
+  <select id="findMonthReserveUserCount"  resultMap="FindResultMap" parameterType="com.lss.core.dto.FindStOrderPage">
+  		<![CDATA[
+	  		SELECT COUNT(*) reserve_user_count,t.adminid from ls_workorder t where 
+			DATE_FORMAT(t.reservedate,'%Y-%m') = #{stDateStr}  and DATE_FORMAT(t.allottime,'%Y-%m')=#{stDateStr}  and t.`status`  in (3,4)   
+		]]>
+		<if test="adminids != null and adminids.size()>0">
+				and t.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		GROUP BY t.adminid 
+  </select>		
+  	<!-- 3.总到店数 (本月累计到店（新客到店数+历史到店数）) -->
+  <select id="findMonthAllReserveCount"  resultMap="FindResultMap" parameterType="com.lss.core.dto.FindStOrderPage">
+  		<![CDATA[
+	  		SELECT COUNT(*) all_reserve_count,t.adminid from ls_workorder t where 
+			 DATE_FORMAT(t.reservedate,'%Y-%m') = #{stDateStr} and t.`status`  in (3,4) 
+		]]>
+		<if test="adminids != null and adminids.size()>0">
+				and t.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		GROUP BY t.adminid 
+  </select>	
+    
+    <!-- 7.大项（正畸1、种植2、修复140）+实付金额大于1000+状态（已成交）-->
+  <select id="findMonthBigDealCount"  resultMap="FindResultMap" parameterType="com.lss.core.dto.FindStOrderPage">
+  		<![CDATA[
+			SELECT COUNT(*) big_deal_count,g.adminid from (
+				SELECT sum(p.amount) big_deal_amt,t.adminid,t.orderno from ls_workorder t
+				JOIN ls_order_pay p on t.orderno=p.orderno where 
+				 DATE_FORMAT(p.pay_time,'%Y-%m')=#{stDateStr} and  t.`status`=4  and t.projectid in(1,2,140) GROUP BY t.adminid,t.orderno
+			) g where g.big_deal_amt >=100000 
+		]]>
+		<if test="adminids != null and adminids.size()>0">
+				and g.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		GROUP BY g.adminid 
+  </select>	
+  
+      <!-- 9.业绩完成=状态（已完成）+全部项目实收金额（大项目+其他）-->
+  <select id="findMonthAllDealAmt"  resultMap="FindResultMap" parameterType="com.lss.core.dto.FindStOrderPage">
+  		<![CDATA[
+ 			SELECT sum(p.amount) all_deal_amt,t.adminid from ls_workorder t
+			JOIN ls_order_pay p on t.orderno=p.orderno where 
+			DATE_FORMAT(p.pay_time,'%Y-%m')=#{stDateStr} and  t.`status`=4   
+		]]>
+		<if test="adminids != null and adminids.size()>0">
+				and t.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		GROUP BY t.adminid 
+  </select>	
+  
+  	
+</mapper>

@@ -1,0 +1,12 @@
+com\lss\test\SmsRecordServiceImplTest.class
+com\lss\test\WorkOrderServiceTest.class
+com\lss\test\OrderPayServiceImplTest.class
+com\lss\test\CallEventServiceImplTest.class
+com\lss\test\StCallServiceImplTest.class
+com\lss\test\BaikeServiceImplTest.class
+com\lss\test\OrgServiceImplTest.class
+com\lss\test\StOrderServiceImplTest.class
+com\lss\test\CallRecordServiceImplTest.class
+com\lss\test\SpringTestCase.class
+com\lss\test\AdminLoginServiceImplTest.class
+com\lss\test\PhoneServiceImplTest.class

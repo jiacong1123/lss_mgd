@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lss.core.dao.BannerMapper">
+	<resultMap id="BaseResultMap" type="com.lss.core.pojo.Banner">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="image" property="image" jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="small_icon" jdbcType="VARCHAR" property="smallIcon" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, title, image, url, type, status, createtime, small_icon
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from ls_banner
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		ls_banner
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.lss.core.pojo.Banner">
+    insert into ls_banner (id, title, image, 
+      url, type, status, 
+      createtime, small_icon)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{smallIcon,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lss.core.pojo.Banner">
+    insert into ls_banner
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createtime != null">
+        createtime,
+      </if>
+      <if test="smallIcon != null">
+        small_icon,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="smallIcon != null">
+        #{smallIcon,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lss.core.pojo.Banner">
+    update ls_banner
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null">
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="smallIcon != null">
+        small_icon = #{smallIcon,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lss.core.pojo.Banner">
+    update ls_banner
+    set title = #{title,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      small_icon = #{smallIcon,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+	<select id="adminCount" resultType="java.lang.Integer"
+		parameterType="com.lss.core.vo.admin.params.BannerParams">
+		SELECT COUNT(1) FROM ls_banner WHERE `status` &gt;= 0
+		<if test="type != null">
+			AND type=#{type}
+		</if>
+	</select>
+	<select id="adminList" resultMap="BaseResultMap"
+		parameterType="com.lss.core.vo.admin.params.BannerParams">
+		SELECT * FROM ls_banner WHERE `status` &gt;= 0
+		<if test="type != null">
+			AND type=#{type}
+		</if>
+		ORDER BY id DESC LIMIT #{index},#{limit}
+	</select>
+	<select id="homeList" resultMap="BaseResultMap" parameterType="com.lss.core.pojo.Banner">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_banner WHERE `status`=1 AND type=#{type} ORDER BY id DESC
+	</select>
+</mapper>

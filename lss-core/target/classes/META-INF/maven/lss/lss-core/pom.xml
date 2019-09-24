@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>lss</groupId>
+	<artifactId>lss-core</artifactId>
+	<version>1.0.2</version>
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>parent</groupId>
+		<version>1.0</version>
+	</parent>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.qiniu</groupId>
+			<artifactId>pili-sdk-java</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qiniu</groupId>
+			<artifactId>qiniu-java-sdk</artifactId>
+			<version>7.1.3</version>
+		</dependency>
+	</dependencies>
+	
+	<build>
+	 <plugins>  
+        <!--
+        此plugin可以用
+        利用此plugin，把源代码中的xml文件，打包到相应位置，
+        这里主要是为了打包Mybatis的mapper.xml文件 
+        -->
+        <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.5</version>
+            <executions>
+                <execution>
+                    <id>copy-xmls</id>
+                    <phase>process-sources</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${basedir}/target/classes</outputDirectory>
+                        <resources>
+                            <resource>
+                                <directory>${basedir}/src/main/java</directory>
+                                <includes>
+                                    <include>**/*.xml</include>
+                                </includes>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>   
+    </plugins>     
+</build>
+
+</project>

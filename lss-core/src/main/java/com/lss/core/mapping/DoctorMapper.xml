@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lss.core.dao.DoctorMapper">
+	<resultMap id="BaseResultMap" type="com.lss.core.pojo.Doctor">
+		<id column="doctorid" property="doctorid" jdbcType="INTEGER" />
+		<result column="clinicid" property="clinicid" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="CHAR" />
+		<result column="sex" property="sex" jdbcType="INTEGER" />
+		<result column="titleid" property="titleid" jdbcType="INTEGER" />
+		<result column="photo" property="photo" jdbcType="VARCHAR" />
+		<result column="goodat" property="goodat" jdbcType="VARCHAR" />
+		<result column="synopsis" property="synopsis" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="ksid" property="ksid" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		doctorid, clinicid, name, phone, sex, titleid, photo,
+		goodat,
+		synopsis,
+		status,
+		createtime, ksid
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from ls_doctor
+		where doctorid = #{doctorid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		ls_doctor
+		where
+		doctorid =
+		#{doctorid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.lss.core.pojo.Doctor">
+		insert into ls_doctor
+		(doctorid,
+		clinicid, name,
+		phone,
+		sex,
+		titleid,
+		photo, goodat, synopsis,
+		status, createtime, ksid)
+		values
+		(#{doctorid,jdbcType=INTEGER},
+		#{clinicid,jdbcType=INTEGER},
+		#{name,jdbcType=VARCHAR},
+		#{phone,jdbcType=CHAR},
+		#{sex,jdbcType=INTEGER},
+		#{titleid,jdbcType=INTEGER},
+		#{photo,jdbcType=VARCHAR},
+		#{goodat,jdbcType=VARCHAR},
+		#{synopsis,jdbcType=VARCHAR},
+		#{status,jdbcType=INTEGER},
+		#{createtime,jdbcType=TIMESTAMP},
+		#{ksid,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.lss.core.pojo.Doctor">
+		insert into ls_doctor
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="doctorid != null">
+				doctorid,
+			</if>
+			<if test="clinicid != null">
+				clinicid,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="titleid != null">
+				titleid,
+			</if>
+			<if test="photo != null">
+				photo,
+			</if>
+			<if test="goodat != null">
+				goodat,
+			</if>
+			<if test="synopsis != null">
+				synopsis,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createtime != null">
+				createtime,
+			</if>
+			<if test="ksid != null">
+				ksid,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="doctorid != null">
+				#{doctorid,jdbcType=INTEGER},
+			</if>
+			<if test="clinicid != null">
+				#{clinicid,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=CHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=INTEGER},
+			</if>
+			<if test="titleid != null">
+				#{titleid,jdbcType=INTEGER},
+			</if>
+			<if test="photo != null">
+				#{photo,jdbcType=VARCHAR},
+			</if>
+			<if test="goodat != null">
+				#{goodat,jdbcType=VARCHAR},
+			</if>
+			<if test="synopsis != null">
+				#{synopsis,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ksid != null">
+				#{ksid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.lss.core.pojo.Doctor">
+		update ls_doctor
+		<set>
+			<if test="clinicid != null">
+				clinicid = #{clinicid,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=CHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=INTEGER},
+			</if>
+			<if test="titleid != null">
+				titleid = #{titleid,jdbcType=INTEGER},
+			</if>
+			<if test="photo != null">
+				photo = #{photo,jdbcType=VARCHAR},
+			</if>
+			<if test="goodat != null">
+				goodat = #{goodat,jdbcType=VARCHAR},
+			</if>
+			<if test="synopsis != null">
+				synopsis = #{synopsis,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createtime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ksid != null">
+				ksid = #{ksid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where doctorid = #{doctorid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.lss.core.pojo.Doctor">
+		update ls_doctor
+		set clinicid = #{clinicid,jdbcType=INTEGER},
+		name =
+		#{name,jdbcType=VARCHAR},
+		phone =
+		#{phone,jdbcType=CHAR},
+		sex =
+		#{sex,jdbcType=INTEGER},
+		titleid =
+		#{titleid,jdbcType=INTEGER},
+		photo =
+		#{photo,jdbcType=VARCHAR},
+		goodat
+		=
+		#{goodat,jdbcType=VARCHAR},
+		synopsis
+		=
+		#{synopsis,jdbcType=VARCHAR},
+		status =
+		#{status,jdbcType=INTEGER},
+		createtime =
+		#{createtime,jdbcType=TIMESTAMP},
+		ksid =
+		#{ksid,jdbcType=INTEGER}
+		where
+		doctorid =
+		#{doctorid,jdbcType=INTEGER}
+	</update>
+	<select id="doctorCount" resultType="java.lang.Integer"
+		parameterType="com.lss.core.vo.admin.params.DoctorParams">
+		SELECT COUNT(1) FROM ls_doctor WHERE `status` &gt;= 0
+		<if test="clinicid != null">
+			AND clinicid=#{clinicid}
+		</if>
+		<if test="name != null">
+			AND `name`=#{name}
+		</if>
+		<if test="status != null">
+			AND `status`=#{status}
+		</if>
+		<if test="titleid != null">
+			AND titleid=#{titleid}
+		</if>
+	</select>
+	<select id="doctorList" resultType="com.lss.core.vo.admin.DoctorVo"
+		parameterType="com.lss.core.vo.admin.params.DoctorParams">
+		SELECT a.*,b.shortname,c.tagname jobtitle,d.tagname department FROM
+		ls_doctor a
+		LEFT JOIN
+		ls_clinic b ON a.clinicid=b.clinicid
+		LEFT JOIN
+		ls_worktag c ON a.titleid=c.tagid
+		LEFT JOIN ls_worktag d ON
+		a.ksid=d.tagid
+		WHERE a.`status` &gt;= 0
+		<if test="clinicid != null">
+			AND a.clinicid=#{clinicid}
+		</if>
+		<if test="name != null">
+			AND a.`name`=#{name}
+		</if>
+		<if test="status != null">
+			AND a.`status`=#{status}
+		</if>
+		<if test="titleid != null">
+			AND a.titleid=#{titleid}
+		</if>
+		ORDER BY a.doctorid DESC LIMIT #{index},#{limit}
+	</select>
+	<select id="getDoctorMenus" resultType="com.lss.core.vo.admin.DoctorMenu"
+		parameterType="java.lang.Integer">
+		SELECT doctorid,`name` FROM ls_doctor WHERE `status`=1
+		AND clinicid=#{clinicid}
+	</select>
+	<select id="getDoctorsList" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_doctor WHERE `status`=1
+		AND clinicid=#{clinicid}
+	</select>
+	<select id="homeCount" resultType="java.lang.Integer"
+		parameterType="com.lss.core.vo.pc.HomeParams">
+		SELECT COUNT(1) FROM ls_doctor WHERE `status`=1
+		<if test="ksid != null">
+			AND ksid=#{ksid}
+		</if>
+	</select>
+	<select id="homeList" resultType="com.lss.core.vo.admin.DoctorVo"
+		parameterType="com.lss.core.vo.pc.HomeParams">
+		SELECT a.*,b.shortname,c.tagname jobtitle,d.tagname department FROM
+		ls_doctor a
+		LEFT JOIN
+		ls_clinic b ON a.clinicid=b.clinicid
+		LEFT JOIN
+		ls_worktag c ON a.titleid=c.tagid
+		LEFT JOIN ls_worktag d ON
+		a.ksid=d.tagid
+		WHERE a.`status` = 1
+		<if test="ksid != null">
+			AND a.ksid=#{ksid}
+		</if>
+		LIMIT #{index},#{limit}
+	</select>
+	<select id="queryByID" resultType="com.lss.core.vo.admin.DoctorVo"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from ls_doctor
+		where doctorid = #{doctorid,jdbcType=INTEGER}
+	</select>
+	<select id="otherList" resultType="com.lss.core.vo.pc.DoctorListVo"
+		parameterType="java.lang.Integer">
+		SELECT a.doctorid,a.`name`,a.photo,b.tagname jobtitle
+		FROM ls_doctor a
+		LEFT JOIN ls_worktag b ON a.titleid=b.tagid
+		WHERE
+		a.`status`=1 AND a.doctorid!=#{doctorid} ORDER BY rand() LIMIT 4
+	</select>
+	<select id="clinicDoctorList" resultType="com.lss.core.vo.pc.DoctorListVo"
+		parameterType="java.lang.Integer">
+		SELECT a.doctorid,a.`name`,a.photo,b.tagname jobtitle
+		FROM ls_doctor a
+		LEFT
+		JOIN ls_worktag b ON a.titleid=b.tagid
+		WHERE
+		a.`status`=1 AND
+		a.clinicid=#{clinicid}
+	</select>
+</mapper>

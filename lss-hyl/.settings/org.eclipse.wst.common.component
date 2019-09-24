@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="lss-hyl-1.0.0">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <dependent-module archiveName="lss-core-1.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lss-core/lss-core">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="wxpay-sdk-3.0.9.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/wxpay-sdk/wxpay-sdk">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="lss-hyl"/>
+        <property name="java-output-path" value="/lss-hyl/target/classes"/>
+    </wb-module>
+</project-modules>
