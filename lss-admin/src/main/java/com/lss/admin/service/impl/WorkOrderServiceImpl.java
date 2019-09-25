@@ -1096,7 +1096,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if(null == params.getStart()) {
 			params.setStart(new Date());
 		}
-		//if()
+		//预约提醒状态:1-未提醒;2-已提醒
+		if(null == params.getIsRemind()) {
+			params.setIsRemind("1");
+		}
 		try {
 			//先获取预约的时间段
 			Calendar calendar = Calendar.getInstance();
@@ -1259,10 +1262,16 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 				throw new LssException(ResponseCode.parameterError, "电销组长未分配组织");
 			}
 		}
-		result.setTotal(MapperManager.workOrderMapper.reserveCount(params));//查总数
+		//查一小时内待提醒的预约总数
+		Integer total = MapperManager.workOrderMapper.reserveCount(params);
+		result.setTotal(total);
 		result.setResult(ResponseCode.success);
 		result.setMsg(ResponseCode.successMsg);
-		
+		//如果预约数量大于0,则更新提醒状态为已提醒
+		if(total>0) {
+			params.setIsRemind("2");
+			MapperManager.workOrderMapper.updateIsRemindStatus(params);
+		}
 		
 		
 		return result;

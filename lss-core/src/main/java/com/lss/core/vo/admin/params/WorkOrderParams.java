@@ -59,12 +59,21 @@ public class WorkOrderParams extends PageParams {
     /** 预约时间*/
     private List<String> times;
     
-    
+    /** 预约提醒状态:1-未提醒;2-已提醒*/
+    private String isRemind;
     
     
 	
 	
 	
+
+	public String getIsRemind() {
+		return isRemind;
+	}
+
+	public void setIsRemind(String isRemind) {
+		this.isRemind = isRemind;
+	}
 
 	public List<String> getTimes() {
 		return times;

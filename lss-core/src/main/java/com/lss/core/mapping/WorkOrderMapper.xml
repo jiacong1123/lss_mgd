@@ -829,11 +829,37 @@ WHERE a.isclue=1
 			<if test="end != null">
 				AND reservedate &lt;= #{end}
 			</if>
+			<if test="isRemind != null">
+				AND is_remind = #{isRemind}
+			</if>
 			AND reservetime in
 			<foreach collection="times" item="time" open="(" close=")" separator=",">
 				#{time}
 			</foreach>
   		</where>
   	</select>
+  	
+  	<update id="updateIsRemindStatus" parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+  		update ls_workorder
+  		set is_remind = #{isRemind}
+  		<where>
+  			<if test="adminids != null and adminids.size()>0">
+				adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+			</if>
+			<if test="adminid != null">
+				AND adminid=#{adminid}
+			</if>
+  			<if test="start != null">
+				AND reservedate &gt;= #{start}
+			</if>
+			<if test="end != null">
+				AND reservedate &lt;= #{end}
+			</if>
+			AND reservetime in
+			<foreach collection="times" item="time" open="(" close=")" separator=",">
+				#{time}
+			</foreach>
+  		</where>
+  	</update>
   	
 </mapper>

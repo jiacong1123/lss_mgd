@@ -210,4 +210,10 @@ public interface WorkOrderMapper extends AbstractMapper<WorkOrder, String> {
 	 */
 	Integer reserveCount(WorkOrderParams params);
 
+	/**
+	 * 更新提醒状态
+	 * @param params
+	 */
+	void updateIsRemindStatus(WorkOrderParams params);
+
 }
