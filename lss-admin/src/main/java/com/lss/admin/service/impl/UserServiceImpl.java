@@ -346,6 +346,8 @@ public class UserServiceImpl implements UserService {
 			String content = "新增";
 			// 如果已分配人员 状态设置为待跟进
 			if (order.getAdminid() != null) {
+				//2019-09-25 v1.4.4 导入时如果有所属人员则设置分配日期
+				order.setAllottime(new Date());
 				order.setStatus(1);
 				content += "分配";
 			}

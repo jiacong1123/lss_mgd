@@ -498,7 +498,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			order.setStatus(2);// 已预约
 		} else if (order.getAdminid() != null) {
 			order.setStatus(1);// 已分配人员
-			order.setAllottime(new Date());//最新分配时间 2019.08.12 v1.4
+			//order.setAllottime(new Date());//最新分配时间 2019.08.12 v1.4
 		}
 		// 添加/编辑工单
 		if (ObjectUtil.isEmpty(order.getOrderno())) {
@@ -1096,6 +1096,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if(null == params.getStart()) {
 			params.setStart(new Date());
 		}
+		//if()
 		try {
 			//先获取预约的时间段
 			Calendar calendar = Calendar.getInstance();
