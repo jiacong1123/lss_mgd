@@ -53,6 +53,20 @@ public class StCallController extends BaseController {
 
 		return stCallService.findTodayStCallPage(params, loginAdmin);
 	}
+	
+	/**
+	 * 今日联系统计
+	 * 
+	 * @param params
+	 * @return
+	 * @author lhy 2019.08.15 v1.4
+	 */
+	@RequestMapping("list/today/count")
+	public ReturnVo countToday(@RequestBody FindStCallPage params) {
+		params.setPage(1);
+		params.setLimit(100000000);
+		return stCallService.findTodayStCallCount(params, loginAdmin);
+	}
 
 	/**
 	 * 历史联系
@@ -83,6 +97,39 @@ public class StCallController extends BaseController {
 			params.setAdminids(adminids);
 		}
 		return stCallService.findStCallPage(params);
+	}
+	
+	/**
+	 * 历史联系统计
+	 * 
+	 * @param params
+	 * @return
+	 * @author lhy 2019.08.15 v1.4
+	 */
+	@RequestMapping("list/history/count")
+	public ReturnVo countHistory(@RequestBody FindStCallPage params) {
+		params.setPage(1);
+		params.setLimit(100000000);
+		if(StringUtils.isNotEmpty(params.getStartDateStr())) {
+			params.setStartDate(DateUtils.parseDate(params.getStartDateStr()));
+		}
+		if(StringUtils.isNotEmpty(params.getStartDateStr())) {
+			params.setEndDate(DateUtils.parseDate(params.getEndDateStr()));	
+		}
+		LoginAdmin admin = loginAdmin;
+		// 查询条件
+		if (ObjectUtil.isEmpty(admin.getRoles())) {
+			throw new LssException(ResponseCode.failure, "还未分配角色");
+		}
+		// 如果是 电销组长查小组成员的，是电销员则只查自己的
+		if (admin.getRoles().contains(9)) {// 电销组长
+			params.setAdminids(ServiceManager.adminService.selectGroupAdminids(admin.getAdminid()));
+		} else if (admin.getRoles().contains(3)) {// 电销员
+			List<Integer> adminids = new ArrayList<Integer>();
+			adminids.add(admin.getAdminid());
+			params.setAdminids(adminids);
+		}
+		return stCallService.findStCallCount(params);
 	}
 
 	/**

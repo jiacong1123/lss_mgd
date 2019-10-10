@@ -122,5 +122,20 @@ public interface IStCallService {
 	 */
 	public ReturnVo findTodayStCallPage(FindStCallPage findStCallPage, LoginAdmin admin) throws LssException;
 
+	/**
+	 * 今日联系统计
+	 * @param params
+	 * @param loginAdmin
+	 * @return
+	 */
+	public ReturnVo findTodayStCallCount(FindStCallPage findStCallPage, LoginAdmin admin);
+
+	/**
+	 * 历史联系统计
+	 * @param params
+	 * @return
+	 */
+	public ReturnVo findStCallCount(FindStCallPage params);
+
 	
 }

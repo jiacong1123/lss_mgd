@@ -491,6 +491,9 @@
 		<if test="followupTimeEnd != null">
 			AND a.followuptime &lt; #{followupTimeEnd}
 		</if>
+		<if test="startCloseTime != null">
+			AND a.followuptime &gt; #{startCloseTime}
+		</if>
 		<if test="endCloseTime != null">
 			AND a.followuptime &lt; #{endCloseTime}
 		</if>
@@ -591,6 +594,9 @@
 		</if>
 		<if test="followupTimeEnd != null">
 			AND a.followuptime &lt; #{followupTimeEnd}
+		</if>
+		<if test="startCloseTime != null">
+			AND a.followuptime &gt; #{startCloseTime}
 		</if>
 		<if test="endCloseTime != null">
 			AND a.followuptime &lt; #{endCloseTime}
@@ -832,10 +838,12 @@ WHERE a.isclue=1
 			<if test="isRemind != null">
 				AND is_remind = #{isRemind}
 			</if>
-			AND reservetime in
-			<foreach collection="times" item="time" open="(" close=")" separator=",">
-				#{time}
-			</foreach>
+			<if test="times != null">
+				AND reservetime in
+				<foreach collection="times" item="time" open="(" close=")" separator=",">
+					#{time}
+				</foreach>
+			</if>
   		</where>
   	</select>
   	
@@ -861,5 +869,10 @@ WHERE a.isclue=1
 			</foreach>
   		</where>
   	</update>
+  	
+  	<select id="findWordOrderByOrderNo" parameterType="java.lang.String" resultMap="BaseResultMap">
+  		select * from ls_workorder
+  		where orderno = #{orderno}
+  	</select>
   	
 </mapper>

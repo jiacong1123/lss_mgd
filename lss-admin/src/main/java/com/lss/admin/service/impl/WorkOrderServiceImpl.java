@@ -99,9 +99,17 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			return result;
 		}
 		if(params.getStatus()==98) {//待调库（回收）列表
-			Date now = DateUtils.getDateDay(new Date());
-			Date nextDay = DateUtils.addDate(now, SystemConstant.WORK_ORDER_WILL_CLOSE_DAY);
-			params.setEndCloseTime(nextDay);
+			if(params.getStartCloseTime() != null) {
+				params.setStartCloseTime(DateUtils.addDate(params.getStartCloseTime(), SystemConstant.WORK_ORDER_WILL_CLOSE_DAY));
+				if(params.getEndCloseTime() != null) {
+					params.setEndCloseTime(DateUtils.addDate(params.getEndCloseTime(), SystemConstant.WORK_ORDER_WILL_CLOSE_DAY));
+				}
+			}
+			else {
+				Date now = DateUtils.getDateDay(new Date());
+				Date nextDay = DateUtils.addDate(now, SystemConstant.WORK_ORDER_WILL_CLOSE_DAY);
+				params.setEndCloseTime(nextDay);
+			}
 		}
 		// 其他状态要加相应的查询条件
 //		if (params.getStatus() != 0 && params.getStatus() != 5) {//关闭的也只看本人的 2019.08.12 v1.4
@@ -498,7 +506,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			order.setStatus(2);// 已预约
 		} else if (order.getAdminid() != null) {
 			order.setStatus(1);// 已分配人员
-			//order.setAllottime(new Date());//最新分配时间 2019.08.12 v1.4
 		}
 		// 添加/编辑工单
 		if (ObjectUtil.isEmpty(order.getOrderno())) {
@@ -507,6 +514,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			order.setOrderno(orderno);
 			order.setUserid(params.getUser().getUserid());
 			order.setCreatetime(dt);
+			order.setAllottime(new Date());
 			MapperManager.workOrderMapper.insertSelective(order);
 			String content = "新增" + (order.getAdminid() != null ? "分配" : "");
 			insertWorkRecord(orderno, admin.getAdminid(), content, null);
@@ -1105,7 +1113,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(params.getStart());
 			int hours = calendar.get(Calendar.HOUR_OF_DAY);
-			System.out.println(hours);
 			String timeStart = "";
 			String timeEnd = "";
 			List<String> times = new ArrayList<>();
@@ -1275,6 +1282,20 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		
 		
 		return result;
+	}
+
+	
+	@Override
+	public WorkOrder findWordOrderByOrderNo(String orderno) {
+		log.info("findWordOrderByOrderNo(String orderno = {}) - start",orderno);
+		try {
+			WorkOrder orderVo = MapperManager.workOrderMapper.findWordOrderByOrderNo(orderno);
+			return orderVo;
+		} catch (Exception e) {
+			log.error("通过工单号查询工单错误!",e);
+			return null;
+		}
+		
 	}
  
 	

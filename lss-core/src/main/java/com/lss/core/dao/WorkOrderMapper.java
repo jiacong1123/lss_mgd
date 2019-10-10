@@ -216,4 +216,10 @@ public interface WorkOrderMapper extends AbstractMapper<WorkOrder, String> {
 	 */
 	void updateIsRemindStatus(WorkOrderParams params);
 
+	/**
+	 * @param orderno
+	 * @return
+	 */
+	WorkOrder findWordOrderByOrderNo(String orderno);
+
 }

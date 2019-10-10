@@ -5,6 +5,7 @@ import com.lss.core.pojo.WorkRecord;
 import com.lss.core.pojo.WorkTag;
 import com.lss.core.vo.ReturnVo;
 import com.lss.core.vo.admin.LoginAdmin;
+import com.lss.core.vo.admin.WorkOrderVo;
 import com.lss.core.vo.admin.WorkRecordVo;
 import com.lss.core.vo.admin.params.UserOrderParams;
 import com.lss.core.vo.admin.params.WorkOrderParams;
@@ -207,4 +208,10 @@ public interface WorkOrderService {
 	 * @return
 	 */
 	ReturnVo reserveCount(WorkOrderParams params, LoginAdmin loginAdmin);
+
+	/**
+	 * @param orderno
+	 * @return
+	 */
+	WorkOrder findWordOrderByOrderNo(String orderno);
 }

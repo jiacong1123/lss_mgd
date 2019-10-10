@@ -248,13 +248,21 @@ public class WorkOrderController extends BaseController {
 	 */
 	@RequestMapping("followup")
 	public ReturnVo followup(@RequestBody WorkOrder order) {
-		//更新状态为已回访
-		WorkOrderParams params = new WorkOrderParams();
-		params .setIsReturn("2");
-		List<String> ordernos = new ArrayList<String>();
-		ordernos.add(order.getOrderno());
-		params.setOrdernos(ordernos );
-		ServiceManager.workOrderService.updateIsReturn(params);
+		//处理待跟进工单时更新状态为已回访
+		WorkOrder orderVo = ServiceManager.workOrderService.findWordOrderByOrderNo(order.getOrderno());
+		if(orderVo!=null&&orderVo.getFollowup()>0) {
+			WorkOrderParams params = new WorkOrderParams();
+			params.setIsReturn("2");
+			//如果用户修改推迟回访时间,则更新状态为待回访
+			if(order.getReturndate().after(orderVo.getReturndate())) {
+				params.setIsReturn("1");
+			}
+			List<String> ordernos = new ArrayList<String>();
+			ordernos.add(order.getOrderno());
+			params.setOrdernos(ordernos );
+			ServiceManager.workOrderService.updateIsReturn(params);
+		}
+		
 		return ServiceManager.workOrderService.followup(order, loginAdmin);
 	}
 

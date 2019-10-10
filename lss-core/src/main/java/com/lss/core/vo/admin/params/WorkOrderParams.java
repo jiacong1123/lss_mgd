@@ -7,7 +7,7 @@ import com.lss.core.vo.PageParams;
 
 public class WorkOrderParams extends PageParams {
 	// 前端传入参数
-	private Integer status;
+	private Integer status; //状态 0未分配 1待跟进 2已预约 3已到店 4已完成 5已关闭 10新分配 99全部 98待回收列表
 	private String name;
 	private String phone;
 	private String level;
@@ -31,6 +31,9 @@ public class WorkOrderParams extends PageParams {
 	private Date sourcedateEnd;
     /** 分配时间*/
     private Date allottime;
+    
+    /** 即将关闭的的时间 */
+    private Date startCloseTime;
     /** 即将关闭的的时间 */
     private Date endCloseTime;
     
@@ -66,6 +69,14 @@ public class WorkOrderParams extends PageParams {
 	
 	
 	
+
+	public Date getStartCloseTime() {
+		return startCloseTime;
+	}
+
+	public void setStartCloseTime(Date startCloseTime) {
+		this.startCloseTime = startCloseTime;
+	}
 
 	public String getIsRemind() {
 		return isRemind;

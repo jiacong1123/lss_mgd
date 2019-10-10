@@ -2,6 +2,7 @@ package com.lss.admin.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 /**
  * Copyright &copy; 2017-2020  All rights reserved.
  *
@@ -9,6 +10,7 @@ import java.util.Date;
  * 
  */
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -268,6 +270,118 @@ public class StCallServiceImpl implements IStCallService {
 		result.setPage(findStCallPage.getPage());
 		result.setLimit(findStCallPage.getLimit());
 		result.setObj(returnList);
+		result.setTotal(count);
+		result.setResult(ResponseCode.success);
+		result.setMsg(ResponseCode.successMsg); 
+		
+		logger.debug("findStCallPage(FindStCallPage) - end - return value={}", result); //$NON-NLS-1$
+		return  result;
+	}
+
+
+	
+	@Override
+	public ReturnVo findTodayStCallCount(FindStCallPage findStCallPage, LoginAdmin admin) {
+		logger.debug("findStCallPage(FindStCallPage findStCallPage={}) - start", findStCallPage); //$NON-NLS-1$
+		AssertUtils.notNull(findStCallPage);
+		// 查询条件
+		if (ObjectUtil.isEmpty(admin.getRoles())) {
+			 throw new LssException(ResponseCode.failure, "还未分配角色");
+		}
+	
+		List<StCallDto> returnList=null;
+		int count = 0;
+		Map map = new HashMap<>();
+		try {
+			//如果是 电销组长查小组成员的，是电销员则只查自己的
+			if (admin.getRoles().contains(9)) {// 电销组长
+				Admin findAdmin = MapperManager.adminMapper.selectByPrimaryKey(admin.getAdminid());
+				if (findAdmin.getOrgId() != null) {
+					// 下属及同组员工
+					List<Integer> adminids = MapperManager.adminMapper.selectByOrgId(findAdmin.getOrgId());
+					if (adminids.size() == 0) {// 没下属，则给一个不存在的账号 避免拿了所有员工数据
+						adminids.add(-1);
+					}
+					findStCallPage.setAdminids(adminids);
+				} else {
+					throw new LssException(ResponseCode.parameterError, "电销组长未分配组织");
+				}
+			} else if (admin.getRoles().contains(3)) {//电销员
+				List<Integer> adminids =new ArrayList<Integer>();
+				adminids.add(admin.getAdminid());
+				findStCallPage.setAdminids(adminids);
+			}
+			String stDateToday = DateUtils.formatdateFormatDB(new Date());
+			findStCallPage.setStDate(stDateToday); //统计今天的
+			
+			//统计通话次数,通话时长,平均通话时长
+			double callCount = 0;
+			double duration = 0;
+			double avgDuration = 0;
+			returnList = stCallDao.findTodayStCallPage(findStCallPage);
+			for (StCallDto stCallDto : returnList) {
+				callCount+=stCallDto.getCallCount();
+				duration+=stCallDto.getDuration();
+			}
+			avgDuration = Math.ceil(duration/callCount);
+			count = stCallDao.findTodayStCallCount(findStCallPage);
+			
+			map.put("callCount", callCount);
+			map.put("duration", duration);
+			map.put("avgDuration", avgDuration);
+		}  catch (Exception e) {
+			logger.error("员工电联统计信息不存在错误",e);
+			throw new LssException(ResponseCode.failure,"员工电联统计信息不存在错误.！",e);
+		}
+		
+		
+		
+		
+		ReturnVo result = new ReturnVo();
+		result.setPage(findStCallPage.getPage());
+		result.setLimit(findStCallPage.getLimit());
+		result.setObj(map);
+		result.setTotal(count);
+		result.setResult(ResponseCode.success);
+		result.setMsg(ResponseCode.successMsg); 
+		
+		logger.debug("findStCallPage(FindStCallPage) - end - return value={}", result); //$NON-NLS-1$
+		return  result;
+	}
+
+
+	
+	@Override
+	public ReturnVo findStCallCount(FindStCallPage findStCallPage) {
+		logger.debug("findStCallPage(FindStCallPage findStCallPage={}) - start", findStCallPage); //$NON-NLS-1$
+
+		AssertUtils.notNull(findStCallPage);
+		List<StCallDto> returnList=null;
+		int count = 0;
+		Map map = new HashMap<>();
+		try {
+			//统计通话次数,通话时长,平均通话时长
+			double callCount = 0;
+			double duration = 0;
+			double avgDuration = 0;
+			returnList = stCallDao.findStCallPage(findStCallPage);
+			for (StCallDto stCallDto : returnList) {
+				callCount+=stCallDto.getCallCount();
+				duration+=stCallDto.getDuration();
+			}
+			avgDuration = Math.ceil(duration/callCount);
+			count = stCallDao.findStCallPageCount(findStCallPage);
+			map.put("callCount", callCount);
+			map.put("duration", duration);
+			map.put("avgDuration", avgDuration);
+		}  catch (Exception e) {
+			logger.error("员工电联统计信息不存在错误",e);
+			throw new LssException(ResponseCode.failure,"员工电联统计信息不存在错误.！",e);
+		}
+		ReturnVo result = new ReturnVo();
+		result.setPage(findStCallPage.getPage());
+		result.setLimit(findStCallPage.getLimit());
+		result.setObj(map);
 		result.setTotal(count);
 		result.setResult(ResponseCode.success);
 		result.setMsg(ResponseCode.successMsg); 
