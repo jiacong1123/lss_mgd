@@ -521,10 +521,14 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		} else {
 			WorkOrder temp = MapperManager.workOrderMapper
 					.selectByPrimaryKey(order.getOrderno());
-			// 修改工单
-			order.setUserid(null);
-			order.setStatus(null);
-			order.setCreatetime(null);
+			// 编辑待分配工单如果所属人员不为空,则更新工单为已分配
+			if(order.getStatus()==1 && order.getAdminid() != null) {
+				order.setStatus(1);
+			}else {
+				order.setUserid(null);
+				order.setStatus(null);
+				order.setCreatetime(null);
+			}
 			MapperManager.workOrderMapper.updateByPrimaryKeySelective(order);
 			if (temp.getStatus() == 0 && order.getAdminid() != null) {
 				insertWorkRecord(order.getOrderno(), admin.getAdminid(), "分配",
