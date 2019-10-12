@@ -254,7 +254,8 @@ public class WorkOrderController extends BaseController {
 			WorkOrderParams params = new WorkOrderParams();
 			params.setIsReturn("2");
 			//如果用户修改推迟回访时间,则更新状态为待回访
-			if(order.getReturndate().after(orderVo.getReturndate())) {
+			if(order.getReturndate()!=null&&orderVo.getReturndate()!=null
+					&&order.getReturndate().after(orderVo.getReturndate())) {
 				params.setIsReturn("1");
 			}
 			List<String> ordernos = new ArrayList<String>();
