@@ -169,6 +169,8 @@ public class CommonServiceImpl implements CommonService {
 				tagPar.setTagname("官网");
 			}else if (url.indexOf("wy") != -1) {
 				tagPar.setTagname("网易信息流");
+			}else if (url.indexOf("marking") != -1) {
+				tagPar.setTagname("市场部_异业合作");
 			}else {
 				tagPar.setTagname("官网");
 			}
