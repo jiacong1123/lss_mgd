@@ -130,5 +130,8 @@ public class SystemConstant {
 		domainWhiteList.add("http://121.201.66.202");//外网测试环境
 		//2019-9-20新增白名单
 		domainWhiteList.add("http://bms.lesasa.wang");
+		//2019-10-17新增pc官网白名单
+		domainWhiteList.add("http://pcapi.leshasha.com");
+		domainWhiteList.add("http://lesasa.com");
 	}
 }
