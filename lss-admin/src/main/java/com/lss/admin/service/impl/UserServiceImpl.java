@@ -246,6 +246,8 @@ public class UserServiceImpl implements UserService {
 						}else if(0==findOrder.getStatus()) {//待分配，则进行分配
 							WorkOrder updateOrder=new WorkOrder();
 							updateOrder.setAdminid(admin.getAdminid());
+							//FixBug:1510导入客户信息，部分渠道没有分配日期
+							updateOrder.setAllottime(new Date());
 							updateOrder.setOrderno(findOrder.getOrderno());
 							updateOrder.setStatus(1);
 							if (temp.size() >= 9) {

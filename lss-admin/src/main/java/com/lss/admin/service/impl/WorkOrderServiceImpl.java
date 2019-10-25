@@ -578,30 +578,20 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			result.setMsg(ResponseCode.parameterErrorMsg);
 			return result;
 		}
-		if (ObjectUtil.isEmpty(order.getClosereason())) {
-			result.setResult(ResponseCode.parameterError);
-			result.setMsg("请填写关闭原因");
-			return result;
-		}
-		/*	WorkOrder workOrder = MapperManager.workOrderMapper
-				.selectByPrimaryKey(order.getOrderno());
-		
-		 * if (!admin.getAdminid().equals(workOrder.getAdminid())) {
-		 * result.setResult(ResponseCode.failure);
-		 * result.setMsg("非法操作，您不能关闭该工单！"); return result; }
-		 */
-		WorkOrder updateOrder=new WorkOrder();
-		updateOrder.setOrderno(order.getOrderno());
-		updateOrder.setClosereason(admin.getName()+":"+order.getClosereason());
-		if (MapperManager.workOrderMapper.closeWorkOrder(updateOrder) > 0) {
-			// 添加记录
-			insertWorkRecord(order.getOrderno(), admin.getAdminid(),
-					"关闭工单！关闭原因：" + (null==order.getClosereason()?"":order.getClosereason()), order.getFollowup());
-			result.setResult(ResponseCode.success);
-			result.setMsg(ResponseCode.successMsg);
-		} else {
-			result.setResult(ResponseCode.failure);
-			result.setMsg(ResponseCode.failureMsg);
+		String[] orderonArr = order.getOrderno().split(",");
+		for (String orderno : orderonArr) {
+			WorkOrder updateOrder=new WorkOrder();
+			updateOrder.setOrderno(orderno);
+			updateOrder.setClosereason(admin.getName()+":"+order.getClosereason());
+			if (MapperManager.workOrderMapper.closeWorkOrder(updateOrder) > 0) {
+				// 添加记录
+				insertWorkRecord(orderno, admin.getAdminid(),
+						"关闭工单！关闭原因：" + (null==order.getClosereason()?"":order.getClosereason()), order.getFollowup());
+				result.setResult(ResponseCode.success);
+				result.setMsg(ResponseCode.successMsg);
+			} else {
+				throw new LssException(ResponseCode.failure, "关闭工单失败!");
+			}
 		}
 		return result;
 	}
@@ -836,17 +826,18 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			result.setMsg(ResponseCode.parameterErrorMsg);
 			return result;
 		}
-		// 如果激活的角色是电销，直接挂在他的名下
-		if (admin.getRoles().contains(3)) {
-			order.setAdminid(admin.getAdminid());
-		}
+		
 		//2019-10-25 新增批量领取功能
 		String[] ordernos = order.getOrderno().split(",");
 		for (String orderno : ordernos) {
 			WorkOrder workOrder = new WorkOrder();
+			// 如果激活的角色是电销，直接挂在他的名下
+			if (admin.getRoles().contains(3)) {
+				workOrder.setAdminid(admin.getAdminid());
+			}
 			workOrder.setOrderno(orderno);
-			if (MapperManager.workOrderMapper.activation(order) > 0) {
-				insertWorkRecord(order.getOrderno(), admin.getAdminid(), "激活工单",
+			if (MapperManager.workOrderMapper.activation(workOrder) > 0) {
+				insertWorkRecord(workOrder.getOrderno(), admin.getAdminid(), "激活工单",
 						null);
 				result.setResult(ResponseCode.success);
 				result.setMsg(ResponseCode.successMsg);

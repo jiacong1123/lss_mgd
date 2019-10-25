@@ -260,9 +260,11 @@
 	
 	<select id="queryPersonnels" resultType="com.lss.core.vo.admin.PersonnelVo"
 		parameterType="com.lss.core.vo.admin.params.PersonParams">
-		SELECT adminid,`name` FROM ls_admin WHERE `status`=1 AND adminid IN(
-		SELECT adminid FROM ls_admin_role WHERE roleid=#{roleid}
-		)
+		SELECT adminid,`name` FROM ls_admin WHERE `status`=1 
+		<if test="roleid != null and roleid != 1">
+			AND adminid IN
+			(SELECT adminid FROM ls_admin_role WHERE roleid=#{roleid})
+		</if>
 		<if test="clinicid != null">
 			AND clinicid=#{clinicid}
 		</if>

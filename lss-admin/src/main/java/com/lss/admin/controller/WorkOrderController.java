@@ -3,6 +3,7 @@ package com.lss.admin.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -234,8 +235,9 @@ public class WorkOrderController extends BaseController {
 		WorkOrderParams params = new WorkOrderParams();
 		params .setIsReturn("2");
 		List<String> ordernos = new ArrayList<String>();
-		ordernos.add(order.getOrderno());
-		params.setOrdernos(ordernos );
+		String[] ordernoArr = order.getOrderno().split(",");
+		Collections.addAll(ordernos, ordernoArr);
+		params.setOrdernos(ordernos);
 		ServiceManager.workOrderService.updateIsReturn(params);
 		return ServiceManager.workOrderService.close(order, loginAdmin);
 	}

@@ -651,8 +651,7 @@
 	</update>
 	<update id="closeWorkOrder" parameterType="com.lss.core.pojo.WorkOrder">
 		UPDATE ls_workorder
-		SET `status`=5,closereason=#{closereason} WHERE orderno=#{orderno} AND
-		`status`=1
+		SET `status`=5,closereason=#{closereason} WHERE orderno=#{orderno} 
 	</update>
 	<update id="followupWorkOrder" parameterType="com.lss.core.pojo.WorkOrder">
 		update ls_workorder
