@@ -28,8 +28,8 @@ public class WorkOrderJob {
 	@Resource
 	WorkOrderService workOrderService;
 	
-	@Scheduled(cron = "0 20 0 * * ? ")  //每天的0时20分执行 正式
-//	@Scheduled(fixedDelay=300000) //测试用，5分钟执行一次  
+	//@Scheduled(cron = "0 20 0 * * ? ")  //每天的0时20分执行 正式
+	@Scheduled(fixedDelay=300000) //测试用，5分钟执行一次  
 	public void autoCloseWorkOrder() {
 		Long ctime = System.currentTimeMillis();
 		logger.info("批次{}:系统开始关闭工单。", ctime);

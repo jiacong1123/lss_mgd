@@ -840,15 +840,21 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if (admin.getRoles().contains(3)) {
 			order.setAdminid(admin.getAdminid());
 		}
-		if (MapperManager.workOrderMapper.activation(order) > 0) {
-			insertWorkRecord(order.getOrderno(), admin.getAdminid(), "激活工单",
-					null);
-			result.setResult(ResponseCode.success);
-			result.setMsg(ResponseCode.successMsg);
-		} else {
-			result.setResult(ResponseCode.failure);
-			result.setMsg(ResponseCode.failureMsg);
+		//2019-10-25 新增批量领取功能
+		String[] ordernos = order.getOrderno().split(",");
+		for (String orderno : ordernos) {
+			WorkOrder workOrder = new WorkOrder();
+			workOrder.setOrderno(orderno);
+			if (MapperManager.workOrderMapper.activation(order) > 0) {
+				insertWorkRecord(order.getOrderno(), admin.getAdminid(), "激活工单",
+						null);
+				result.setResult(ResponseCode.success);
+				result.setMsg(ResponseCode.successMsg);
+			} else {
+				throw new LssException(ResponseCode.failure, "领取客户失败!");
+			}
 		}
+		
 		return result;
 	}
 
