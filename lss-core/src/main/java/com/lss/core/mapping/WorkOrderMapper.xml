@@ -681,8 +681,14 @@
 		WHERE orderno=#{orderno} AND `status`=2
 	</update>
 	<update id="turnFollowUp" parameterType="com.lss.core.pojo.WorkRecord">
-		UPDATE ls_workorder SET
-		followup=followup+1 WHERE orderno=#{orderno}
+		UPDATE ls_workorder 
+		<set>
+			<if test="status != null and status != 0">
+				status=#{status},
+			</if>
+			followup=followup+1 
+		</set>
+		WHERE orderno=#{orderno}
 	</update>
 	<update id="arrivals" parameterType="com.lss.core.pojo.WorkOrder">
 		UPDATE ls_workorder
