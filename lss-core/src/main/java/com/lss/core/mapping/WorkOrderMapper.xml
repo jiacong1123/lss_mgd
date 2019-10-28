@@ -682,7 +682,7 @@
 	</update>
 	<update id="turnFollowUp" parameterType="com.lss.core.pojo.WorkRecord">
 		UPDATE ls_workorder SET
-		`status`=1,followup=followup+1 WHERE orderno=#{orderno}
+		followup=followup+1 WHERE orderno=#{orderno}
 	</update>
 	<update id="arrivals" parameterType="com.lss.core.pojo.WorkOrder">
 		UPDATE ls_workorder
