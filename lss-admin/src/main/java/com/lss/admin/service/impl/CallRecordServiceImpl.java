@@ -392,6 +392,8 @@ public class CallRecordServiceImpl implements ICallRecordService {
 					llrt="暂时无法接听, 连连后台使用信号异常";
 				}else if("OTHER".equals(dto.getLlResult())) {
 					llrt="其他失败情形, 连连后台使用信号异常";
+				}else if("CALLED_RISKY".equals(dto.getLlResult())) {
+					llrt="风险被叫";
 				}else {
 					llrt=dto.getLlResult();
 				}
