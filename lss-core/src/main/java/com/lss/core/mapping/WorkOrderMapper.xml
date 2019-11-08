@@ -500,6 +500,11 @@
 		<if test="adminids != null and adminids.size()>0">
 			and a.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
 		</if>
+		<if test="tags != null and tags.size()>0">
+			<foreach collection="tags" item="tag" open="" close="" separator="">
+				and b.lablenames like CONCAT('%',#{tag},'%') 
+			</foreach>
+		</if>
 		<if test="searchKey != null and searchKey!=''">
 			and (b.`name` like CONCAT('%',#{searchKey,jdbcType=VARCHAR},'%' ) or b.phone=#{searchKey} )
 		</if>
@@ -560,10 +565,10 @@
 			</otherwise>
 		</choose>
 		<if test="name != null">
-			AND b.`name`=#{name}
+			AND b.`name` like CONCAT('%',#{name},'%')
 		</if>
 		<if test="phone != null">
-			AND b.phone=#{phone}
+			AND b.phone like CONCAT(#{phone},'%') 
 		</if>
 		<if test="level != null">
 			AND a.`level`=#{level}
@@ -604,6 +609,11 @@
 		<if test="adminids != null and adminids.size()>0">
 			and a.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
 		</if>
+		<if test="tags != null and tags.size()>0">
+			<foreach collection="tags" item="tag" open="" close="" separator="">
+				and b.lablenames like CONCAT('%',#{tag},'%') 
+			</foreach>
+		</if>
 		<if test="searchKey != null and searchKey!=''">
 			and (b.`name` like CONCAT('%',#{searchKey,jdbcType=VARCHAR},'%' ) or b.phone=#{searchKey} )
 		</if>
@@ -641,8 +651,7 @@
 		<if test="allottime != null">
         	,allottime = #{allottime,jdbcType=TIMESTAMP}
       	</if>
-		 WHERE `status`=0
-		AND
+		 WHERE
 		orderno IN
 		<foreach collection="ordernos" item="orderno" index="index"
 			open="(" close=")" separator=",">

@@ -65,10 +65,30 @@ public class WorkOrderParams extends PageParams {
     /** 预约提醒状态:1-未提醒;2-已提醒*/
     private String isRemind;
     
+    /** 标签*/
+    private List<String> tags;
     
+    /** 标签*/
+    private String tag;
 	
 	
 	
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
 
 	public Date getStartCloseTime() {
 		return startCloseTime;

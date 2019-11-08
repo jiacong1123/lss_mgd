@@ -134,39 +134,29 @@ public class WorkOrderController extends BaseController {
 	}
 	
 	/**
-	 * 最近三天待回访列表
+	   * 查询十分钟内待回访数量
 	 * 
 	 * @return
 	 */
 	@RequestMapping("returnCount")
 	public ReturnVo returnCount(@RequestBody WorkOrderParams params) {
-		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat newSFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
-			//查询最近三天未回访的工单数量
 			params.setIsReturn("1");
 			//如果回访时间为空,默认取当前日期
-			if(null == params.getReturndateEnd()) {
-				params.setReturndateEnd(new Date());
+			if(null == params.getReturndateStart()) {
+				params.setReturndateStart(new Date());
 			}
-			if(null != params.getReturndateEnd()) {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(params.getReturndateEnd());
-				calendar.add(calendar.DAY_OF_MONTH, -3);
-				String start = sFormat.format(calendar.getTime())+" 00:00:00";
-				params.setReturndateStart(newSFormat.parse(start));
-			}
-			if(null != params.getReturndateEnd()) {
-				String end = sFormat.format(params.getReturndateEnd())+" 23:59:59";
-				params.setReturndateEnd(newSFormat.parse(end));
-			}
+			//2019-11-08 新需求:查询十分钟内待回访数量,以弹窗形式提醒
+			Calendar ca = Calendar.getInstance();
+			ca.setTime(params.getReturndateStart());
+			ca.add(Calendar.MINUTE, 10);
+			params.setReturndateEnd(ca.getTime());
 		} catch (Exception e) {
 			ReturnVo vo = new ReturnVo();
 			vo.setResult(ResponseCode.error);
 			vo.setMsg("时间转换出错!");
 			return vo;
 		}
-		
 		return ServiceManager.workOrderService.returnCount(params, loginAdmin);
 		
 	}
@@ -419,6 +409,9 @@ public class WorkOrderController extends BaseController {
 		
 		return returnVo;
 	}
+	
+	
+	
 	
 	
 }

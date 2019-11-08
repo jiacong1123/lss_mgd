@@ -13,6 +13,7 @@ import com.lss.admin.service.ClueService;
 import com.lss.admin.service.CommonService;
 import com.lss.admin.service.DoctorService;
 import com.lss.admin.service.IAdminLoginService;
+import com.lss.admin.service.IWorkTagService;
 import com.lss.admin.service.NewsService;
 import com.lss.admin.service.PhoneService;
 import com.lss.admin.service.ProductService;
@@ -59,6 +60,20 @@ public class ServiceManager {
 
 	public static IAdminLoginService adminLoginService;
 	
+	public static IWorkTagService workTagService;
+	
+	
+	
+	
+
+	public  IWorkTagService getWorkTagService() {
+		return workTagService;
+	}
+	@Resource
+	public void setWorkTagService(IWorkTagService workTagService) {
+		ServiceManager.workTagService = workTagService;
+	}
+
 	public AdminService getAdminService() {
 		return adminService;
 	}

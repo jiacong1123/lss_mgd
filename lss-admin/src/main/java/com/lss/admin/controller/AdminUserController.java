@@ -137,7 +137,7 @@ public class AdminUserController extends BaseController {
 	}
 
 	/**
-	 * 人员
+	 * 人员(不带权限查所有人)
 	 * 
 	 * @return
 	 */
@@ -147,7 +147,7 @@ public class AdminUserController extends BaseController {
 	}
 	
 	/**
-	 * 人员列表
+	 * 人员列表(带权限)
 	 * 
 	 * @return
 	 */
