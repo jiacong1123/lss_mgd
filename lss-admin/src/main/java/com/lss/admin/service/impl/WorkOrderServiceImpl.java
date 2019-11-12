@@ -318,7 +318,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		List<WorkTag> data = new ArrayList<>();
 		for (Iterator<WorkTag> iterator = tags.iterator(); iterator.hasNext();) {
 			WorkTag ele = iterator.next();
-			if (ele.getParentid() == parentId) {
+			if (parentId.equals(ele.getParentid())) {
 				data.add(ele);
 			}
 		}
