@@ -24,6 +24,13 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.9</version>
+		</dependency>
+		
+		<!-- 云片短信 -->
+		<dependency>
+	    	<groupId>com.yunpian.sdk</groupId>
+		    <artifactId>yunpian-java-sdk</artifactId>
+		    <version>1.2.7</version>
 		</dependency> 
 		
 	</dependencies>

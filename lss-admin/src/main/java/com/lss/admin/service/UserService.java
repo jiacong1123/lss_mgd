@@ -10,6 +10,7 @@ import com.lss.core.pojo.User;
 import com.lss.core.pojo.WorkTag;
 import com.lss.core.vo.ReturnVo;
 import com.lss.core.vo.admin.LoginAdmin;
+import com.lss.core.vo.admin.UserVo;
 import com.lss.core.vo.admin.params.UserExeclParams;
 import com.lss.core.vo.admin.params.UserParams;
 
@@ -82,4 +83,6 @@ public interface UserService {
 	 * @author lhy 2019.08.07
 	 */
 	void updateUser(User user);
+
+	UserVo findUserByPhone(String phone);
 }

@@ -1300,4 +1300,124 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	}
 
+	@Override
+	public ReturnVo offerOrder(WorkOrderParams params, LoginAdmin loginAdmin) {
+		log.info("offerOrder(WorkOrderParams params, LoginAdmin loginAdmin) - start", params,loginAdmin);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			if(null==params.getAdminid()) {
+				params.setAdminid(loginAdmin.getAdminid());
+			}
+			//首先判断所选工单是本人的工单(通过工单号查询所属用户)
+			List<Integer> adminids = MapperManager.workOrderMapper.findAdminIds(params);
+			if(adminids!=null && adminids.size()>1) {
+				returnVo.setResult(ResponseCode.failure);
+				returnVo.setMsg("只允许共享自己的工单!");
+				return returnVo;
+			}
+			List<String> ordernos = params.getOrdernos();
+			List<Integer> adminid = params.getAdminids();
+			StringBuilder sb = new StringBuilder();
+			for (int i=0;i<adminid.size();i++) {
+				if(i==0) {
+					sb.append(adminid.get(i));
+				}else {
+					sb.append(",").append(adminid.get(i));
+				}
+			}
+			//我共享的
+			params.setFromMe(params.getAdminid().toString());
+			//共享给我的
+			params.setToMe(sb.toString());
+			for (String orderNo : ordernos) {
+				params.setOrderNo(orderNo);
+				MapperManager.workOrderMapper.offerWorkOrder(params);
+				//新增工单流程记录
+				WorkRecord record = new WorkRecord();
+				record.setAdminid(params.getAdminid());
+				record.setOrderno(orderNo);
+				record.setCreatetime(new Date());
+				record.setContent(loginAdmin.getName()+" 新增客户共享同事:"+params.getAdminNames());
+				MapperManager.workRecordMapper.insertSelective(record);
+			}
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			return returnVo;
+		} catch (Exception e) {
+			log.error("共享工单错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+			return returnVo;
+		}
+	}
+
+	@Override
+	public ReturnVo offerToMe(WorkOrderParams params) {
+		log.debug("offerToMe(WorkOrderParams params = {})-start",params);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			int count = MapperManager.workOrderMapper.offerToMeCount(params);
+			returnVo.setTotal(count);
+			if(count>0) {
+				List<WorkOrderVo> list = MapperManager.workOrderMapper.offerToMe(params);
+				returnVo.setObj(list);
+			}
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			return returnVo;
+		} catch (Exception e) {
+			log.error("查询共享给我的工单错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+			return returnVo;
+		}
+	}
+
+	@Override
+	public ReturnVo offerFromMe(WorkOrderParams params) {
+		log.debug("offerFromMe(WorkOrderParams params = {})-start",params);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			int count = MapperManager.workOrderMapper.offerFromMeCount(params);
+			returnVo.setTotal(count);
+			if(count>0) {
+				List<WorkOrder> list = MapperManager.workOrderMapper.offerFromMe(params);
+				returnVo.setObj(list);
+			}
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			return returnVo;
+		} catch (Exception e) {
+			log.error("查询我共享的工单错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+			return returnVo;
+		}
+	}
+
+	@Override
+	public ReturnVo cancleOffer(WorkOrderParams params,LoginAdmin loginAdmin) {
+		log.debug("cancleOffer(WorkOrderParams params = {})-start",params);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			params.setOrderNo(params.getOrderNo());
+			MapperManager.workOrderMapper.cancleOffer(params);
+			WorkRecord record = new WorkRecord();
+			record.setAdminid(params.getAdminid());
+			record.setCreatetime(new Date());
+			record.setOrderno(params.getOrderNo());
+			record.setContent(loginAdmin.getName());
+			MapperManager.workRecordMapper.insertSelective(record);
+			
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			return returnVo;
+		} catch (Exception e) {
+			log.error("取消共享错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+			return returnVo;
+		}
+	}
+
 }

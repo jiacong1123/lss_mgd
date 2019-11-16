@@ -410,6 +410,14 @@ public class UserServiceImpl implements UserService {
 		int i= MapperManager.userMapper.updateByPrimaryKeySelective(user);
 		log.info("修改结果：userid{}:{}",user.getUserid(),i);
 	}
+
+	@Override
+	public UserVo findUserByPhone(String phone) {
+		if (ObjectUtil.isEmpty(phone)) {
+			throw new LssException(ResponseCode.parameterError, "手机号码为空");
+		}
+		return MapperManager.userMapper.queryByPhone(phone);
+	}
 	
 	
 	

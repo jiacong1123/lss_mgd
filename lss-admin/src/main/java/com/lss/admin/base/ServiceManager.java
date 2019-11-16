@@ -13,6 +13,8 @@ import com.lss.admin.service.ClueService;
 import com.lss.admin.service.CommonService;
 import com.lss.admin.service.DoctorService;
 import com.lss.admin.service.IAdminLoginService;
+import com.lss.admin.service.IMessageRecordService;
+import com.lss.admin.service.IMessageService;
 import com.lss.admin.service.IWorkTagService;
 import com.lss.admin.service.NewsService;
 import com.lss.admin.service.PhoneService;
@@ -62,10 +64,26 @@ public class ServiceManager {
 	
 	public static IWorkTagService workTagService;
 	
+	public static IMessageService messageService;
 	
+	public static IMessageRecordService messageRecordService;
 	
 	
 
+	public  IMessageRecordService getMessageRecordService() {
+		return messageRecordService;
+	}
+	@Resource
+	public  void setMessageRecordService(IMessageRecordService messageRecordService) {
+		ServiceManager.messageRecordService = messageRecordService;
+	}
+	public  IMessageService getMessageService() {
+		return messageService;
+	}
+	@Resource
+	public  void setMessageService(IMessageService messageService) {
+		ServiceManager.messageService = messageService;
+	}
 	public  IWorkTagService getWorkTagService() {
 		return workTagService;
 	}

@@ -244,7 +244,6 @@ public class WorkOrderController extends BaseController {
 		WorkOrder orderVo = ServiceManager.workOrderService.findWordOrderByOrderNo(order.getOrderno());
 		if(orderVo!=null&&orderVo.getFollowup()>0) {
 			WorkOrderParams params = new WorkOrderParams();
-			params.setIsReturn("2");
 			//如果用户修改推迟回访时间,则更新状态为待回访
 			if(order.getReturndate()!=null&&orderVo.getReturndate()!=null
 					&&order.getReturndate().after(orderVo.getReturndate())) {
@@ -410,8 +409,61 @@ public class WorkOrderController extends BaseController {
 		return returnVo;
 	}
 	
+	/**
+	 * 批量共享工单
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/offer")
+	public ReturnVo offer(@RequestBody WorkOrderParams params) {
+		if(ObjectUtil.isEmpty(params.getAdminids())) {
+			throw new LssException(ResponseCode.parameterError, "请选择要共享的电销用户!");
+		}
+		if(ObjectUtil.isEmpty(params.getOrdernos())) {
+			throw new LssException(ResponseCode.parameterError, "工单号不能为空!");
+		}
+		return ServiceManager.workOrderService.offerOrder(params, loginAdmin);
+	}
 	
 	
+	/**
+	 * 共享给我的
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/offerToMe")
+	public ReturnVo offerToMe(@RequestBody WorkOrderParams params) {
+		if(null==params.getToMe()) {
+			params.setToMe(loginAdmin.getAdminid().toString());
+		}
+		return ServiceManager.workOrderService.offerToMe(params);
+	}
+	
+	/**
+	 * 我共享的
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/offerByMe")
+	public ReturnVo offerByMe(@RequestBody WorkOrderParams params) {
+		if(null==params.getFromMe()) {
+			params.setFromMe(loginAdmin.getAdminid().toString());
+		}
+		return ServiceManager.workOrderService.offerFromMe(params);
+	}
+	
+	/**
+	 * 取消共享
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/cancleOffer")
+	public ReturnVo cancleOffer(@RequestBody WorkOrderParams params) {
+		if(null==params.getOrderNo()) {
+			throw new LssException(ResponseCode.parameterError, "请选择要取消共享的工单!");
+		}
+		return ServiceManager.workOrderService.cancleOffer(params,loginAdmin);
+	}
 	
 	
 }

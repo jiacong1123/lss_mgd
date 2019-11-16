@@ -214,4 +214,12 @@ public interface WorkOrderService {
 	 * @return
 	 */
 	WorkOrder findWordOrderByOrderNo(String orderno);
+
+	ReturnVo offerOrder(WorkOrderParams params, LoginAdmin loginAdmin);
+
+	ReturnVo offerToMe(WorkOrderParams params);
+
+	ReturnVo offerFromMe(WorkOrderParams params);
+
+	ReturnVo cancleOffer(WorkOrderParams params, LoginAdmin loginAdmin);
 }
