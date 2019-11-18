@@ -1406,7 +1406,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			record.setAdminid(params.getAdminid());
 			record.setCreatetime(new Date());
 			record.setOrderno(params.getOrderNo());
-			record.setContent(loginAdmin.getName());
+			record.setContent(loginAdmin.getName()+" 取消共享工单");
 			MapperManager.workRecordMapper.insertSelective(record);
 			
 			returnVo.setResult(ResponseCode.success);

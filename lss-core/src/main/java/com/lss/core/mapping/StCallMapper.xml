@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lss.core.dao.IStCallDao">
+  <resultMap id="BaseResultMap" type="com.lss.core.pojo.StCall">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="adminid" jdbcType="INTEGER" property="adminid" />
+    <result column="adminname" jdbcType="VARCHAR" property="adminname" />
+    <result column="st_date" jdbcType="TIMESTAMP" property="stDate" />
+    <result column="call_count" jdbcType="INTEGER" property="callCount" />
+    <result column="duration" jdbcType="INTEGER" property="duration" />
+    <result column="avg_duration" jdbcType="INTEGER" property="avgDuration" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, adminid, adminname, st_date, call_count, duration, avg_duration, create_date, 
+    update_date, remark
+  </sql>
+  
+	<resultMap id="FindResultMap"
+		type="com.lss.core.dto.StCallDto" extends="BaseResultMap"></resultMap>
+	<sql id="findPage_condition">
+		<where>
+			<!-- 查询条件根据业务需求自由添加 -->
+			 <if test="id!=null">
+				<![CDATA[and id =#{id}]]>
+			</if>
+			<if test="adminids != null and adminids.size()>0">
+				and adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+			</if>
+			<if test="adminName!= null and adminName!='' " >
+	        		and  adminname like CONCAT('%',#{adminName,jdbcType=VARCHAR},'%' )
+	      	</if>
+	      	<if test="startDate != null">
+				AND st_date &gt;= #{startDate}
+			</if>
+			<if test="endDate != null">
+				AND st_date &lt;= #{endDate}
+			</if>
+		</where>
+	</sql>
+	<!-- 不分页查询 -->
+	<select id="findStCalls" resultMap="FindResultMap"
+		parameterType="com.lss.core.dto.FindStCallPage">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_st_call
+		<include refid="findPage_condition" />
+
+	</select>
+	<!-- 分页查询 -->
+	<select id="findStCallPage" resultMap="FindResultMap"
+		parameterType="com.lss.core.dto.FindStCallPage">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_st_call
+		<include refid="findPage_condition" />
+		order by st_date asc 
+		<if test="page!=0 " >
+			limit ${index} , ${limit}
+		</if>
+	</select>
+	<!-- 查询总数 -->
+	<select id="findStCallPageCount" resultType="int"
+		parameterType="com.lss.core.dto.FindStCallPage">
+		select count(*)
+		FROM ls_st_call
+		<include refid="findPage_condition" />
+	</select>
+	  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ls_st_call
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ls_st_call
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lss.core.pojo.StCall">
+    insert into ls_st_call (id, adminid, adminname, 
+      st_date, call_count, duration, 
+      avg_duration, create_date, update_date, 
+      remark)
+    values (#{id,jdbcType=INTEGER}, #{adminid,jdbcType=INTEGER}, #{adminname,jdbcType=VARCHAR}, 
+      #{stDate,jdbcType=TIMESTAMP}, #{callCount,jdbcType=INTEGER}, #{duration,jdbcType=INTEGER}, 
+      #{avgDuration,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lss.core.pojo.StCall">
+    insert into ls_st_call
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="adminid != null">
+        adminid,
+      </if>
+      <if test="adminname != null">
+        adminname,
+      </if>
+      <if test="stDate != null">
+        st_date,
+      </if>
+      <if test="callCount != null">
+        call_count,
+      </if>
+      <if test="duration != null">
+        duration,
+      </if>
+      <if test="avgDuration != null">
+        avg_duration,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="adminid != null">
+        #{adminid,jdbcType=INTEGER},
+      </if>
+      <if test="adminname != null">
+        #{adminname,jdbcType=VARCHAR},
+      </if>
+      <if test="stDate != null">
+        #{stDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callCount != null">
+        #{callCount,jdbcType=INTEGER},
+      </if>
+      <if test="duration != null">
+        #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="avgDuration != null">
+        #{avgDuration,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lss.core.pojo.StCall">
+    update ls_st_call
+    <set>
+      <if test="adminid != null">
+        adminid = #{adminid,jdbcType=INTEGER},
+      </if>
+      <if test="adminname != null">
+        adminname = #{adminname,jdbcType=VARCHAR},
+      </if>
+      <if test="stDate != null">
+        st_date = #{stDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callCount != null">
+        call_count = #{callCount,jdbcType=INTEGER},
+      </if>
+      <if test="duration != null">
+        duration = #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="avgDuration != null">
+        avg_duration = #{avgDuration,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lss.core.pojo.StCall">
+    update ls_st_call
+    set adminid = #{adminid,jdbcType=INTEGER},
+      adminname = #{adminname,jdbcType=VARCHAR},
+      st_date = #{stDate,jdbcType=TIMESTAMP},
+      call_count = #{callCount,jdbcType=INTEGER},
+      duration = #{duration,jdbcType=INTEGER},
+      avg_duration = #{avgDuration,jdbcType=INTEGER},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+	<!-- 员工电联日统计 -->
+  <insert id="batchAddDailyStCall" parameterType="java.lang.String">
+  		<![CDATA[
+  		INSERT INTO ls_st_call(st_date,call_count,duration,adminid,adminname,avg_duration,create_date)
+ 
+		SELECT #{stDate} as st_date,  count(*) as call_count ,SUM(t.duration) duration,t.admin_id as adminid,t1.`name` as adminname,ROUND(SUM(t.duration)/ count(*)) as avg_duration , SYSDATE() as create_date from
+		ls_admin t1 JOIN 
+		 ls_call_record t 
+		on t1.adminid=t.admin_id
+		where t.admin_id is NOT NULL AND t.duration>0 AND 	DATE_FORMAT(t.create_time,'%Y%m%d') = #{stDate}
+		AND #{stDate} not in( SELECT c.st_date from ls_st_call c where DATE_FORMAT(c.st_date,'%Y%m%d') = #{stDate})
+		 GROUP BY t.admin_id 
+		]]>
+  	</insert>
+
+
+	<!-- 员工电联今日统计查询 入参 stDate=今天的日期 -->
+	<select id="findTodayStCallPage"
+		parameterType="com.lss.core.dto.FindStCallPage"
+		resultMap="FindResultMap">
+  		<![CDATA[
+		SELECT CURDATE() as st_date,  count(*) as call_count ,SUM(t.duration) duration,t.admin_id as adminid,t1.`name` as adminname,ROUND(SUM(t.duration)/ count(*)) as avg_duration , SYSDATE() as create_date from
+		ls_admin t1 JOIN 
+		 ls_call_record t 
+		on t1.adminid=t.admin_id
+		where t.admin_id is NOT NULL AND t.duration>0 AND DATE_FORMAT(t.create_time,'%Y%m%d') = #{stDate}
+		]]>
+		<if test="adminids != null and adminids.size()>0">
+			and t1.adminid in
+			<foreach collection="adminids" item="aid" open="(" close=")"
+				separator=",">#{aid}</foreach>
+		</if>
+		<if test="adminName!= null and adminName!='' " >
+        		and t1.`name` like CONCAT('%',#{adminName,jdbcType=VARCHAR},'%' )
+      	</if>
+		GROUP BY t.admin_id
+		
+		<if test="page!=0 " >
+			limit ${index} , ${limit}
+		</if>
+	</select>
+  
+	 	<!-- 员工电联今日统计查询 入参 stDate=今天的日期 -->
+	<select id="findTodayStCallCount" resultType="int" parameterType="com.lss.core.dto.FindStCallPage">
+		SELECT count(*) from (
+		SELECT t.admin_id as adminid  from
+		ls_admin t1 JOIN 
+		 ls_call_record t 
+		on t1.adminid=t.admin_id
+		where t.admin_id is NOT NULL AND t.duration>0 AND DATE_FORMAT(t.create_time,'%Y%m%d') = #{stDate}
+		<if test="adminids != null and adminids.size()>0">
+			and t1.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		<if test="adminName!= null and adminName!='' " >
+        		and t1.`name` like CONCAT('%',#{adminName,jdbcType=VARCHAR},'%' )
+      	</if>
+		 GROUP BY t.admin_id 
+		) t
+	 </select>
+	 
+</mapper>

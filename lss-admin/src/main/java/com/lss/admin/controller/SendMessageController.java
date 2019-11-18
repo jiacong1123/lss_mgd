@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lss.admin.base.BaseController;
 import com.lss.admin.base.ServiceManager;
+import com.lss.core.base.MapperManager;
 import com.lss.core.constant.ResponseCode;
 import com.lss.core.pojo.MessageRecord;
+import com.lss.core.pojo.WorkRecord;
 import com.lss.core.vo.ReturnVo;
 import com.lss.core.vo.admin.UserVo;
 import com.lss.core.vo.admin.params.MessageParams;
@@ -138,6 +140,16 @@ public class SendMessageController extends BaseController{
 					messageRecord.setUserName(user.getName());
 					messageRecord.setRemark(smsSingleSend.getSid().toString());//短信ID
 					ServiceManager.messageRecordService.insert(messageRecord);
+					
+					//新增工单流程记录
+					WorkRecord record = new WorkRecord();
+					record.setAdminid(loginAdmin.getAdminid());
+					//通过客户手机号码查询工单号
+					String orderNo = MapperManager.workOrderMapper.findOrderNo(user.getPhone());
+					record.setOrderno(orderNo);
+					record.setCreatetime(new Date());
+					record.setContent(loginAdmin.getName()+" 发送短信给客户:"+user.getName());
+					MapperManager.workRecordMapper.insertSelective(record);
 				}
 			}
 			returnVo.setResult(ResponseCode.success);

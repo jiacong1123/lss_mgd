@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lss.core.dao.BagOrderMapper">
+	<resultMap id="BaseResultMap" type="com.lss.core.pojo.BagOrder">
+		<id column="orderno" property="orderno" jdbcType="VARCHAR" />
+		<result column="doctorid" property="doctorid" jdbcType="INTEGER" />
+		<result column="bagid" property="bagid" jdbcType="INTEGER" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="image" property="image" jdbcType="VARCHAR" />
+		<result column="price" property="price" jdbcType="DOUBLE" />
+		<result column="count" property="count" jdbcType="INTEGER" />
+		<result column="amount" property="amount" jdbcType="DOUBLE" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="paytype" property="paytype" jdbcType="INTEGER" />
+		<result column="paytime" property="paytime" jdbcType="TIMESTAMP" />
+		<result column="payorderno" property="payorderno" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		orderno, doctorid, bagid, title, image, price, count,
+		amount, status,
+		createtime,
+		paytype, paytime, payorderno
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from ls_bag_order
+		where orderno = #{orderno,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		ls_bag_order
+		where orderno = #{orderno,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.lss.core.pojo.BagOrder">
+		insert into ls_bag_order
+		(orderno, doctorid, bagid,
+		title, image, price,
+		count, amount, status,
+		createtime, paytype, paytime,
+		payorderno)
+		values
+		(#{orderno,jdbcType=VARCHAR}, #{doctorid,jdbcType=INTEGER},
+		#{bagid,jdbcType=INTEGER},
+		#{title,jdbcType=VARCHAR},
+		#{image,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE},
+		#{count,jdbcType=INTEGER}, #{amount,jdbcType=DOUBLE},
+		#{status,jdbcType=INTEGER},
+		#{createtime,jdbcType=TIMESTAMP},
+		#{paytype,jdbcType=INTEGER}, #{paytime,jdbcType=TIMESTAMP},
+		#{payorderno,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.lss.core.pojo.BagOrder">
+		insert into ls_bag_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderno != null">
+				orderno,
+			</if>
+			<if test="doctorid != null">
+				doctorid,
+			</if>
+			<if test="bagid != null">
+				bagid,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="image != null">
+				image,
+			</if>
+			<if test="price != null">
+				price,
+			</if>
+			<if test="count != null">
+				count,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createtime != null">
+				createtime,
+			</if>
+			<if test="paytype != null">
+				paytype,
+			</if>
+			<if test="paytime != null">
+				paytime,
+			</if>
+			<if test="payorderno != null">
+				payorderno,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orderno != null">
+				#{orderno,jdbcType=VARCHAR},
+			</if>
+			<if test="doctorid != null">
+				#{doctorid,jdbcType=INTEGER},
+			</if>
+			<if test="bagid != null">
+				#{bagid,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="image != null">
+				#{image,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=DOUBLE},
+			</if>
+			<if test="count != null">
+				#{count,jdbcType=INTEGER},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=DOUBLE},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="paytype != null">
+				#{paytype,jdbcType=INTEGER},
+			</if>
+			<if test="paytime != null">
+				#{paytime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="payorderno != null">
+				#{payorderno,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.lss.core.pojo.BagOrder">
+		update ls_bag_order
+		<set>
+			<if test="doctorid != null">
+				doctorid = #{doctorid,jdbcType=INTEGER},
+			</if>
+			<if test="bagid != null">
+				bagid = #{bagid,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="image != null">
+				image = #{image,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=DOUBLE},
+			</if>
+			<if test="count != null">
+				count = #{count,jdbcType=INTEGER},
+			</if>
+			<if test="amount != null">
+				amount = #{amount,jdbcType=DOUBLE},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createtime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="paytype != null">
+				paytype = #{paytype,jdbcType=INTEGER},
+			</if>
+			<if test="paytime != null">
+				paytime = #{paytime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="payorderno != null">
+				payorderno = #{payorderno,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where orderno = #{orderno,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.lss.core.pojo.BagOrder">
+		update
+		ls_bag_order
+		set doctorid = #{doctorid,jdbcType=INTEGER},
+		bagid =
+		#{bagid,jdbcType=INTEGER},
+		title = #{title,jdbcType=VARCHAR},
+		image =
+		#{image,jdbcType=VARCHAR},
+		price = #{price,jdbcType=DOUBLE},
+		count =
+		#{count,jdbcType=INTEGER},
+		amount = #{amount,jdbcType=DOUBLE},
+		status =
+		#{status,jdbcType=INTEGER},
+		createtime =
+		#{createtime,jdbcType=TIMESTAMP},
+		paytype =
+		#{paytype,jdbcType=INTEGER},
+		paytime = #{paytime,jdbcType=TIMESTAMP},
+		payorderno = #{payorderno,jdbcType=VARCHAR}
+		where orderno =
+		#{orderno,jdbcType=VARCHAR}
+	</update>
+	<select id="getBagOrderCount" resultType="java.lang.Integer"
+		parameterType="com.lss.core.vo.hyl.OrderParams">
+		SELECT COUNT(1) FROM ls_bag_order WHERE ((`status`=1 AND
+		paytype=1) OR paytype=2) AND doctorid=#{doctorid}
+	</select>
+	<select id="getBagOrderList" resultMap="BaseResultMap"
+		parameterType="com.lss.core.vo.hyl.OrderParams">
+		SELECT * FROM ls_bag_order WHERE ((`status`=1 AND
+		paytype=1) OR paytype=2) AND doctorid=#{doctorid}
+		ORDER BY createtime
+		DESC LIMIT #{index},#{limit}
+	</select>
+	<update id="upPayStatus" parameterType="com.lss.core.pojo.BagOrder">
+		UPDATE ls_bag_order SET
+		`status`=1,paytype=1,paytime=#{paytime},payorderno=#{payorderno} WHERE
+		orderno=#{orderno} AND `status`=0
+	</update>
+	<select id="queryOrder" resultType="java.lang.Integer"
+		parameterType="com.lss.core.pojo.BagOrder">
+		SELECT COUNT(1) FROM ls_bag_order WHERE
+		doctorid=#{doctorid} AND bagid=#{bagid} AND `status`=0 AND
+		paytype=#{paytype} LIMIT 1
+	</select>
+	<select id="adminBagOrderCount" resultType="java.lang.Integer"
+		parameterType="com.lss.core.vo.hyl.OrderParams">
+		SELECT COUNT(1) FROM ls_bag_order a
+		LEFT JOIN ls_doctor_user b ON
+		a.doctorid=b.doctorid
+		WHERE ((a.`status`=1 AND a.paytype=1) OR
+		a.paytype=2)
+		<if test="phone != null">
+			AND b.phone=#{phone}
+		</if>
+	</select>
+	<select id="adminBagOrderList" resultType="com.lss.core.vo.hyl.BagOrderVo"
+		parameterType="com.lss.core.vo.hyl.OrderParams">
+		SELECT a.*,b.`name`,b.phone FROM ls_bag_order a
+		LEFT JOIN
+		ls_doctor_user b ON a.doctorid=b.doctorid
+		WHERE ((a.`status`=1 AND
+		a.paytype=1) OR a.paytype=2)
+		<if test="phone != null">
+			AND b.phone=#{phone}
+		</if>
+		ORDER BY a.createtime DESC LIMIT #{index},#{limit}
+	</select>
+	<update id="confirmPayment" parameterType="com.lss.core.pojo.BagOrder">
+		UPDATE ls_bag_order
+		SET `status`=1,paytime=#{paytime} WHERE orderno=#{orderno} AND
+		`status`=0
+	</update>
+</mapper>

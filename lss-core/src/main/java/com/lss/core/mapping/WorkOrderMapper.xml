@@ -1,0 +1,1039 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lss.core.dao.WorkOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.lss.core.pojo.WorkOrder" >
+    <id column="orderno" property="orderno" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="clinicid" property="clinicid" jdbcType="INTEGER" />
+    <result column="projectid" property="projectid" jdbcType="INTEGER" />
+    <result column="adminid" property="adminid" jdbcType="INTEGER" />
+    <result column="complaint" property="complaint" jdbcType="VARCHAR" />
+    <result column="worknotes" property="worknotes" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="CHAR" />
+    <result column="returndate" property="returndate" jdbcType="TIMESTAMP" />
+    <result column="reservedate" property="reservedate" jdbcType="DATE" />
+    <result column="reservetime" property="reservetime" jdbcType="VARCHAR" />
+    <result column="closereason" property="closereason" jdbcType="VARCHAR" />
+    <result column="doctorid" property="doctorid" jdbcType="INTEGER" />
+    <result column="arrivaltime" property="arrivaltime" jdbcType="TIMESTAMP" />
+    <result column="followup" property="followup" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="isclue" property="isclue" jdbcType="INTEGER" />
+    <result column="usertype" property="usertype" jdbcType="VARCHAR" />
+    <result column="usertypename" property="usertypename" jdbcType="VARCHAR" />
+    <result column="cluestatus" property="cluestatus" jdbcType="INTEGER" />
+    <result column="ordertype" property="ordertype" jdbcType="INTEGER" />
+    <result column="clinicname" property="clinicname" jdbcType="VARCHAR" />
+    <result column="visitingtime" property="visitingtime" jdbcType="TIMESTAMP" />
+    <result column="amount" jdbcType="BIGINT" property="amount" />
+    <result column="lablenames" jdbcType="VARCHAR" property="lablenames" />
+    <result column="lableremarks" jdbcType="VARCHAR" property="lableremarks" />
+    <result column="receivablesamt" jdbcType="BIGINT" property="receivablesamt" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="debtamt" jdbcType="BIGINT" property="debtamt" />
+    <result column="followuptime" jdbcType="TIMESTAMP" property="followuptime" />
+    <result column="allottime" jdbcType="TIMESTAMP" property="allottime" />
+    <result column="followupremarks" jdbcType="VARCHAR" property="followupremarks" />
+    <result column="is_return" jdbcType="VARCHAR" property="isReturn" />
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+    orderno, userid, status, createtime, clinicid, projectid, adminid, complaint, worknotes, 
+    level, returndate, reservedate, reservetime, closereason, doctorid, arrivaltime, 
+    followup, pid, isclue, usertype, usertypename, cluestatus, ordertype, clinicname, 
+    visitingtime,amount,lablenames, lableremarks, receivablesamt,pay_time,debtamt, followuptime, allottime, 
+    followupremarks,is_return
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ls_workorder
+    where orderno = #{orderno,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from ls_workorder
+    where orderno = #{orderno,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.lss.core.pojo.WorkOrder">
+     insert into ls_workorder (orderno, userid, status, 
+      createtime, clinicid, projectid, 
+      adminid, complaint, level, 
+      returndate, reservedate, reservetime, 
+      closereason, doctorid, arrivaltime, 
+      followup, pid, isclue, 
+      usertype, usertypename, cluestatus, 
+      ordertype, clinicname, visitingtime, 
+      amount, lablenames, lableremarks, 
+      receivablesamt, pay_time, debtamt, 
+      followuptime, allottime, followupremarks, 
+      worknotes)
+    values (#{orderno,jdbcType=VARCHAR}, #{userid,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{clinicid,jdbcType=INTEGER}, #{projectid,jdbcType=INTEGER}, 
+      #{adminid,jdbcType=INTEGER}, #{complaint,jdbcType=VARCHAR}, #{level,jdbcType=CHAR}, 
+      #{returndate,jdbcType=TIMESTAMP}, #{reservedate,jdbcType=DATE}, #{reservetime,jdbcType=VARCHAR}, 
+      #{closereason,jdbcType=VARCHAR}, #{doctorid,jdbcType=INTEGER}, #{arrivaltime,jdbcType=TIMESTAMP}, 
+      #{followup,jdbcType=INTEGER}, #{pid,jdbcType=INTEGER}, #{isclue,jdbcType=INTEGER}, 
+      #{usertype,jdbcType=VARCHAR}, #{usertypename,jdbcType=VARCHAR}, #{cluestatus,jdbcType=INTEGER}, 
+      #{ordertype,jdbcType=INTEGER}, #{clinicname,jdbcType=VARCHAR}, #{visitingtime,jdbcType=TIMESTAMP}, 
+      #{amount,jdbcType=BIGINT}, #{lablenames,jdbcType=VARCHAR}, #{lableremarks,jdbcType=VARCHAR}, 
+      #{receivablesamt,jdbcType=BIGINT}, #{payTime,jdbcType=TIMESTAMP}, #{debtamt,jdbcType=BIGINT}, 
+      #{followuptime,jdbcType=TIMESTAMP}, #{allottime,jdbcType=TIMESTAMP}, #{followupremarks,jdbcType=VARCHAR}, 
+      #{worknotes,jdbcType=LONGVARCHAR})
+  </insert>
+   <insert id="insertSelective" parameterType="com.lss.core.pojo.WorkOrder">
+     insert into ls_workorder
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderno != null">
+        orderno,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createtime != null">
+        createtime,
+      </if>
+      <if test="clinicid != null">
+        clinicid,
+      </if>
+      <if test="projectid != null">
+        projectid,
+      </if>
+      <if test="adminid != null">
+        adminid,
+      </if>
+      <if test="complaint != null">
+        complaint,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="returndate != null">
+        returndate,
+      </if>
+      <if test="reservedate != null">
+        reservedate,
+      </if>
+      <if test="reservetime != null">
+        reservetime,
+      </if>
+      <if test="closereason != null">
+        closereason,
+      </if>
+      <if test="doctorid != null">
+        doctorid,
+      </if>
+      <if test="arrivaltime != null">
+        arrivaltime,
+      </if>
+      <if test="followup != null">
+        followup,
+      </if>
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="isclue != null">
+        isclue,
+      </if>
+      <if test="usertype != null">
+        usertype,
+      </if>
+      <if test="usertypename != null">
+        usertypename,
+      </if>
+      <if test="cluestatus != null">
+        cluestatus,
+      </if>
+      <if test="ordertype != null">
+        ordertype,
+      </if>
+      <if test="clinicname != null">
+        clinicname,
+      </if>
+      <if test="visitingtime != null">
+        visitingtime,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="lablenames != null">
+        lablenames,
+      </if>
+      <if test="lableremarks != null">
+        lableremarks,
+      </if>
+      <if test="receivablesamt != null">
+        receivablesamt,
+      </if>
+      <if test="payTime != null">
+        pay_time,
+      </if>
+      <if test="debtamt != null">
+        debtamt,
+      </if>
+      <if test="followuptime != null">
+        followuptime,
+      </if>
+      <if test="allottime != null">
+        allottime,
+      </if>
+      <if test="followupremarks != null">
+        followupremarks,
+      </if>
+      <if test="worknotes != null">
+        worknotes,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderno != null">
+        #{orderno,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clinicid != null">
+        #{clinicid,jdbcType=INTEGER},
+      </if>
+      <if test="projectid != null">
+        #{projectid,jdbcType=INTEGER},
+      </if>
+      <if test="adminid != null">
+        #{adminid,jdbcType=INTEGER},
+      </if>
+      <if test="complaint != null">
+        #{complaint,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=CHAR},
+      </if>
+      <if test="returndate != null">
+        #{returndate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reservedate != null">
+        #{reservedate,jdbcType=DATE},
+      </if>
+      <if test="reservetime != null">
+        #{reservetime,jdbcType=VARCHAR},
+      </if>
+      <if test="closereason != null">
+        #{closereason,jdbcType=VARCHAR},
+      </if>
+      <if test="doctorid != null">
+        #{doctorid,jdbcType=INTEGER},
+      </if>
+      <if test="arrivaltime != null">
+        #{arrivaltime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="followup != null">
+        #{followup,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null">
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="isclue != null">
+        #{isclue,jdbcType=INTEGER},
+      </if>
+      <if test="usertype != null">
+        #{usertype,jdbcType=VARCHAR},
+      </if>
+      <if test="usertypename != null">
+        #{usertypename,jdbcType=VARCHAR},
+      </if>
+      <if test="cluestatus != null">
+        #{cluestatus,jdbcType=INTEGER},
+      </if>
+      <if test="ordertype != null">
+        #{ordertype,jdbcType=INTEGER},
+      </if>
+      <if test="clinicname != null">
+        #{clinicname,jdbcType=VARCHAR},
+      </if>
+      <if test="visitingtime != null">
+        #{visitingtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=BIGINT},
+      </if>
+      <if test="lablenames != null">
+        #{lablenames,jdbcType=VARCHAR},
+      </if>
+      <if test="lableremarks != null">
+        #{lableremarks,jdbcType=VARCHAR},
+      </if>
+      <if test="receivablesamt != null">
+        #{receivablesamt,jdbcType=BIGINT},
+      </if>
+      <if test="payTime != null">
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="debtamt != null">
+        #{debtamt,jdbcType=BIGINT},
+      </if>
+      <if test="followuptime != null">
+        #{followuptime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="allottime != null">
+        #{allottime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="followupremarks != null">
+        #{followupremarks,jdbcType=VARCHAR},
+      </if>
+      <if test="worknotes != null">
+        #{worknotes,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lss.core.pojo.WorkOrder">
+      update ls_workorder
+    <set>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null">
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clinicid != null">
+        clinicid = #{clinicid,jdbcType=INTEGER},
+      </if>
+      <if test="projectid != null">
+        projectid = #{projectid,jdbcType=INTEGER},
+      </if>
+      <if test="adminid != null">
+        adminid = #{adminid,jdbcType=INTEGER},
+      </if>
+      <if test="complaint != null">
+        complaint = #{complaint,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=CHAR},
+      </if>
+      <if test="returndate != null">
+        returndate = #{returndate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reservedate != null">
+        reservedate = #{reservedate,jdbcType=DATE},
+      </if>
+      <if test="reservetime != null">
+        reservetime = #{reservetime,jdbcType=VARCHAR},
+      </if>
+      <if test="closereason != null">
+        closereason = #{closereason,jdbcType=VARCHAR},
+      </if>
+      <if test="doctorid != null">
+        doctorid = #{doctorid,jdbcType=INTEGER},
+      </if>
+      <if test="arrivaltime != null">
+        arrivaltime = #{arrivaltime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="followup != null">
+        followup = #{followup,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null">
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="isclue != null">
+        isclue = #{isclue,jdbcType=INTEGER},
+      </if>
+      <if test="usertype != null">
+        usertype = #{usertype,jdbcType=VARCHAR},
+      </if>
+      <if test="usertypename != null">
+        usertypename = #{usertypename,jdbcType=VARCHAR},
+      </if>
+      <if test="cluestatus != null">
+        cluestatus = #{cluestatus,jdbcType=INTEGER},
+      </if>
+      <if test="ordertype != null">
+        ordertype = #{ordertype,jdbcType=INTEGER},
+      </if>
+      <if test="clinicname != null">
+        clinicname = #{clinicname,jdbcType=VARCHAR},
+      </if>
+      <if test="visitingtime != null">
+        visitingtime = #{visitingtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=BIGINT},
+      </if>
+      <if test="lablenames != null">
+        lablenames = #{lablenames,jdbcType=VARCHAR},
+      </if>
+      <if test="lableremarks != null">
+        lableremarks = #{lableremarks,jdbcType=VARCHAR},
+      </if>
+      <if test="receivablesamt != null">
+        receivablesamt = #{receivablesamt,jdbcType=BIGINT},
+      </if>
+      <if test="payTime != null">
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="debtamt != null">
+        debtamt = #{debtamt,jdbcType=BIGINT},
+      </if>
+      <if test="followuptime != null">
+        followuptime = #{followuptime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="allottime != null">
+        allottime = #{allottime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="followupremarks != null">
+        followupremarks = #{followupremarks,jdbcType=VARCHAR},
+      </if>
+      <if test="worknotes != null">
+        worknotes = #{worknotes,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where orderno = #{orderno,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lss.core.pojo.WorkOrder" >
+      update ls_workorder
+    set userid = #{userid,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      clinicid = #{clinicid,jdbcType=INTEGER},
+      projectid = #{projectid,jdbcType=INTEGER},
+      adminid = #{adminid,jdbcType=INTEGER},
+      complaint = #{complaint,jdbcType=VARCHAR},
+      level = #{level,jdbcType=CHAR},
+      returndate = #{returndate,jdbcType=TIMESTAMP},
+      reservedate = #{reservedate,jdbcType=DATE},
+      reservetime = #{reservetime,jdbcType=VARCHAR},
+      closereason = #{closereason,jdbcType=VARCHAR},
+      doctorid = #{doctorid,jdbcType=INTEGER},
+      arrivaltime = #{arrivaltime,jdbcType=TIMESTAMP},
+      followup = #{followup,jdbcType=INTEGER},
+      pid = #{pid,jdbcType=INTEGER},
+      isclue = #{isclue,jdbcType=INTEGER},
+      usertype = #{usertype,jdbcType=VARCHAR},
+      usertypename = #{usertypename,jdbcType=VARCHAR},
+      cluestatus = #{cluestatus,jdbcType=INTEGER},
+      ordertype = #{ordertype,jdbcType=INTEGER},
+      clinicname = #{clinicname,jdbcType=VARCHAR},
+      visitingtime = #{visitingtime,jdbcType=TIMESTAMP},
+      amount = #{amount,jdbcType=BIGINT},
+      lablenames = #{lablenames,jdbcType=VARCHAR},
+      lableremarks = #{lableremarks,jdbcType=VARCHAR},
+      receivablesamt = #{receivablesamt,jdbcType=BIGINT},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      debtamt = #{debtamt,jdbcType=BIGINT},
+      followuptime = #{followuptime,jdbcType=TIMESTAMP},
+      allottime = #{allottime,jdbcType=TIMESTAMP},
+      followupremarks = #{followupremarks,jdbcType=VARCHAR},
+      worknotes = #{worknotes,jdbcType=LONGVARCHAR}
+    where orderno = #{orderno,jdbcType=VARCHAR}
+  </update>
+	<select id="workOrderCount" resultType="java.lang.Integer"
+		parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+		SELECT COUNT(1) FROM ls_workorder a LEFT JOIN ls_user b ON
+		a.userid=b.userid WHERE
+		<choose>
+			<when test="status == 1">
+				a.`status`=1 AND a.followup &gt; 0
+			</when>
+			<when test="status == 10">
+				a.`status`=1 AND a.followup=0
+			</when>
+			<when test="status == 99">
+				a.`status`!=0 AND a.`status`!=5
+			</when>
+			<when test="status == 98">
+				a.`status`  in(1,2,3)
+			</when>
+			<otherwise>
+				a.`status`=#{status}
+			</otherwise>
+		</choose>
+		<if test="name != null">
+			AND b.`name`=#{name}
+		</if>
+		<if test="phone != null">
+			AND b.phone=#{phone}
+		</if>
+		<if test="level != null">
+			AND a.`level`=#{level}
+		</if>
+		<if test="adminid != null">
+			AND a.adminid=#{adminid}
+		</if>
+		<if test="clinicid != null">
+			AND a.clinicid=#{clinicid}
+		</if>
+		<if test="doctorid != null">
+			AND a.doctorid=#{doctorid}
+		</if>
+		<if test="start != null">
+			AND a.reservedate &gt;= #{start}
+		</if>
+		<if test="end != null">
+			AND a.reservedate &lt;= #{end}
+		</if>
+		<if test="sourcedateStart != null">
+			AND b.sourcedate &gt;= #{sourcedateStart}
+		</if>
+		<if test="sourcedateEnd != null">
+			AND b.sourcedate &lt; #{sourcedateEnd}
+		</if>
+		<if test="followupTimeStart != null">
+			AND a.followuptime &gt;= #{followupTimeStart}
+		</if>
+		<if test="followupTimeEnd != null">
+			AND a.followuptime &lt; #{followupTimeEnd}
+		</if>
+		<if test="startCloseTime != null">
+			AND a.followuptime &gt; #{startCloseTime}
+		</if>
+		<if test="endCloseTime != null">
+			AND a.followuptime &lt; #{endCloseTime}
+		</if>
+		<if test="adminids != null and adminids.size()>0">
+			and a.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		<if test="tags != null and tags.size()>0">
+			<foreach collection="tags" item="tag" open="" close="" separator="">
+				and b.lablenames like CONCAT('%',#{tag},'%') 
+			</foreach>
+		</if>
+		<if test="searchKey != null and searchKey!=''">
+			and (b.`name` like CONCAT('%',#{searchKey,jdbcType=VARCHAR},'%' ) or b.phone=#{searchKey} )
+		</if>
+		<if test="allottimeStart !=null and allottimeStart != ''">
+			and a.allottime &gt;= #{allottimeStart}
+		</if>
+		<if test="allottimeEnd !=null and allottimeEnd != ''">
+			and a.allottime &lt; #{allottimeEnd}
+		</if>
+		<if test="returndateStart !=null and returndateStart != ''">
+			and a.returndate &gt;= #{returndateStart}
+		</if>
+		<if test="returndateEnd !=null and returndateEnd != ''">
+			and a.returndate &lt; #{returndateEnd}
+		</if>
+		<if test="isReturn != null and isReturn != ''">
+			and a.is_return = #{isReturn}
+		</if>
+		
+	</select>
+	<select id="workOrderList" resultType="com.lss.core.vo.admin.WorkOrderVo"
+		parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+		SELECT a.orderno,b.`name`,b.sex,b.phone,b.sourcedate,c.tagname source,d.shortname
+		clinicname,e.tagname project,f.`name` adminname,a.`level`,g.`name`
+		doctorname,a.returndate,a.clinicid,a.projectid,a.adminid,a.doctorid,a.reservetime,a.reservedate,a.isclue,a.worknotes
+		,a.amount,a.receivablesamt, a.createtime, a.closereason ,b.sourcename2 ,a.`status`,a.followup,b.lablenames, 
+    	b.lableremarks,b.userid ,a.followuptime,a.followupremarks,a.allottime,a.is_return isReturn
+		FROM ls_workorder a
+		LEFT JOIN ls_user b ON
+		a.userid=b.userid
+		LEFT JOIN
+		ls_worktag c ON b.sourceid=c.tagid
+		LEFT JOIN
+		ls_clinic d ON
+		a.clinicid=d.clinicid
+		LEFT JOIN ls_worktag e ON
+		a.projectid=e.tagid
+		LEFT
+		JOIN ls_admin f ON a.adminid=f.adminid
+		LEFT
+		JOIN ls_admin g ON
+		a.doctorid=g.adminid WHERE
+		<choose>
+			<when test="status == 1">
+				a.`status`=1 AND a.followup &gt; 0
+			</when>
+			<when test="status == 10">
+				a.`status`=1 AND a.followup=0
+			</when>
+			<when test="status == 99">
+				a.`status`!=0 AND a.`status`!=5
+			</when>
+			<when test="status == 98">
+				a.`status`  in(1,2,3)
+			</when>
+			<otherwise>
+				a.`status`=#{status}
+			</otherwise>
+		</choose>
+		<if test="name != null">
+			AND b.`name` like CONCAT('%',#{name},'%')
+		</if>
+		<if test="phone != null">
+			AND b.phone like CONCAT(#{phone},'%') 
+		</if>
+		<if test="level != null">
+			AND a.`level`=#{level}
+		</if>
+		<if test="adminid != null">
+			AND a.adminid=#{adminid}
+		</if>
+		<if test="clinicid != null">
+			AND a.clinicid=#{clinicid}
+		</if>
+		<if test="doctorid != null">
+			AND a.doctorid=#{doctorid}
+		</if>
+		<if test="start != null">
+			AND a.reservedate &gt;= #{start}
+		</if>
+		<if test="end != null">
+			AND a.reservedate &lt;= #{end}
+		</if>
+		<if test="sourcedateStart != null">
+			AND b.sourcedate &gt;= #{sourcedateStart}
+		</if>
+		<if test="sourcedateEnd != null">
+			AND b.sourcedate &lt; #{sourcedateEnd}
+		</if>
+		<if test="followupTimeStart != null">
+			AND a.followuptime &gt;= #{followupTimeStart}
+		</if>
+		<if test="followupTimeEnd != null">
+			AND a.followuptime &lt; #{followupTimeEnd}
+		</if>
+		<if test="startCloseTime != null">
+			AND a.followuptime &gt; #{startCloseTime}
+		</if>
+		<if test="endCloseTime != null">
+			AND a.followuptime &lt; #{endCloseTime}
+		</if>
+		<if test="adminids != null and adminids.size()>0">
+			and a.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		<if test="tags != null and tags.size()>0">
+			<foreach collection="tags" item="tag" open="" close="" separator="">
+				and b.lablenames like CONCAT('%',#{tag},'%') 
+			</foreach>
+		</if>
+		<if test="searchKey != null and searchKey!=''">
+			and (b.`name` like CONCAT('%',#{searchKey,jdbcType=VARCHAR},'%' ) or b.phone=#{searchKey} )
+		</if>
+		<if test="allottimeStart !=null and allottimeStart != ''">
+			and a.allottime &gt;= #{allottimeStart}
+		</if>
+		<if test="allottimeEnd !=null and allottimeEnd != ''">
+			and a.allottime &lt; #{allottimeEnd}
+		</if>
+		<if test="returndateStart !=null and returndateStart != ''">
+			and a.returndate &gt;= #{returndateStart}
+		</if>
+		<if test="returndateEnd !=null and returndateEnd != ''">
+			and a.returndate &lt; #{returndateEnd}
+		</if>
+		<if test="isReturn != null and isReturn != ''">
+			and a.is_return = #{isReturn}
+		</if>
+		ORDER BY ${sort},a.followuptime DESC
+		LIMIT #{index},#{limit}
+	</select>
+	<select id="queryDetails" resultType="com.lss.core.vo.admin.WorkOrderDetails">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_workorder WHERE orderno=#{orderno}
+	</select>
+	<select id="queryWorkOrder" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from ls_workorder
+		where userid=#{userid} AND `status`!=4 LIMIT 1
+	</select>
+	<update id="batchassignWorkOrder" parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+		UPDATE ls_workorder SET adminid=#{adminid},`status`=1
+		<if test="allottime != null">
+        	,allottime = #{allottime,jdbcType=TIMESTAMP}
+      	</if>
+		 WHERE
+		orderno IN
+		<foreach collection="ordernos" item="orderno" index="index"
+			open="(" close=")" separator=",">
+			#{orderno}
+		</foreach>
+	</update>
+	<update id="closeWorkOrder" parameterType="com.lss.core.pojo.WorkOrder">
+		UPDATE ls_workorder
+		SET `status`=5,closereason=#{closereason} WHERE orderno=#{orderno} 
+	</update>
+	<update id="followupWorkOrder" parameterType="com.lss.core.pojo.WorkOrder">
+		update ls_workorder
+		<set>
+			<if test="level != null">
+				level = #{level,jdbcType=CHAR},
+			</if>
+			<if test="returndate != null">
+				returndate = #{returndate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="doctorid != null">
+				followup = followup+1,
+			</if>
+		</set>
+		where orderno = #{orderno,jdbcType=VARCHAR}
+	</update>
+	<update id="reserveWorkOrder" parameterType="com.lss.core.pojo.WorkOrder">
+		UPDATE ls_workorder
+		SET
+		`status`=2,clinicid=#{clinicid},reservedate=#{reservedate},reservetime=#{reservetime}
+		WHERE orderno=#{orderno} AND `status`=1
+	</update>
+	<update id="updateReserve" parameterType="com.lss.core.pojo.WorkOrder">
+		UPDATE ls_workorder
+		SET
+		clinicid=#{clinicid},reservedate=#{reservedate},reservetime=#{reservetime}
+		WHERE orderno=#{orderno} AND `status`=2
+	</update>
+	<update id="turnFollowUp" parameterType="com.lss.core.pojo.WorkRecord">
+		UPDATE ls_workorder 
+		<set>
+			<if test="status != null and status != 0">
+				status=#{status},
+			</if>
+			followup=followup+1 
+		</set>
+		WHERE orderno=#{orderno}
+	</update>
+	<update id="arrivals" parameterType="com.lss.core.pojo.WorkOrder">
+		UPDATE ls_workorder
+		SET
+		doctorid=#{doctorid},`status`=3,arrivaltime=#{arrivaltime}
+		WHERE
+		orderno=#{orderno} AND `status`=2
+	</update>
+	<update id="transaction" parameterType="com.lss.core.pojo.WorkOrder">
+		UPDATE ls_workorder
+		SET
+		projectid=#{projectid},`status`=4,pid=#{pid},amount=#{amount},receivablesamt=#{receivablesamt},debtamt=#{debtamt},pay_time=#{payTime} WHERE orderno=#{orderno}
+		AND `status`=3
+	</update>
+	<update id="activation" parameterType="com.lss.core.pojo.WorkOrder">
+		UPDATE ls_workorder
+		SET `status`=1
+		<if test="adminid != null">
+			,adminid=#{adminid}
+		</if>
+		WHERE orderno=#{orderno} AND `status`=5
+	</update>
+	<select id="getClueCount" resultType="int" parameterType="com.lss.core.vo.admin.params.ClueParams">
+		SELECT COUNT(1) FROM ls_workorder a
+LEFT JOIN ls_user b ON a.userid=b.userid
+WHERE a.isclue=1   
+		<choose>
+			<when test="type == 1">
+				AND a.cluestatus=0
+			</when>
+			<otherwise>
+				AND a.cluestatus &gt; 0
+			</otherwise>
+		</choose>
+		<if test="usertype != null">
+			AND a.usertype=#{usertype}
+		</if>
+		<if test="name != null">
+			AND b.`name` LIKE CONCAT('%',#{name},'%')
+		</if>
+		<if test="phone != null">
+			AND b.phone=#{phone}
+		</if>
+	</select>
+	<select id="getClueList" resultType="com.lss.core.vo.hx.ClueListVo" parameterType="com.lss.core.vo.admin.params.ClueParams">
+		SELECT a.*,b.sex,b.`name`,b.phone,b.province,b.city,b.area,c.tagname project,d.tagname source,b.sourcedate,b.age FROM ls_workorder a
+LEFT JOIN ls_user b ON a.userid=b.userid
+LEFT JOIN ls_worktag c ON a.projectid=c.tagid
+LEFT JOIN ls_worktag d ON b.sourceid=d.tagid
+WHERE a.isclue=1 
+		<choose>
+			<when test="type == 1">
+				AND a.cluestatus=0
+			</when>
+			<otherwise>
+				AND a.cluestatus &gt; 0
+			</otherwise>
+		</choose>
+		<if test="usertype != null">
+			AND a.usertype=#{usertype}
+		</if>
+		<if test="name != null">
+			AND b.`name` LIKE CONCAT('%',#{name},'%')
+		</if>
+		<if test="phone != null">
+			AND b.phone=#{phone}
+		</if>
+		LIMIT #{index},#{limit}
+	</select>
+	<update id="clueTurnFollowUp">
+		UPDATE ls_workorder SET isclue=0,usertype=null,usertypename=null WHERE cluestatus=0 AND orderno=#{orderno}
+	</update>
+	<update id="clueCancelShop">
+		UPDATE ls_workorder SET cluestatus=0,ordertype=null,clinicname=null,visitingtime=null WHERE cluestatus=2 AND orderno=#{orderno}
+	</update>
+	
+	<!-- 只有已关闭的工单才可物理删除 -->
+	<delete id="deleteOrder" parameterType="com.lss.core.pojo.WorkOrder" >
+	    delete from ls_workorder
+	    where orderno = #{orderno,jdbcType=VARCHAR} and `status`=5
+  	</delete>
+  	<!-- 只有已关闭的工单才可物理删除 -->
+	<delete id="deleteOrderByUser" parameterType="com.lss.core.pojo.WorkOrder" >
+	    delete from ls_workorder
+	    where userid = #{userid}
+  	</delete>
+  	
+	<!-- 批量转移 -->
+	<update id="batchTransfer" parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+		UPDATE ls_workorder SET adminid=#{adminid}
+		<if test="allottime != null">
+        	,allottime = #{allottime,jdbcType=TIMESTAMP}
+      	</if>
+		 WHERE 
+		<if test="status!=null">
+			`status`=#{status} AND 
+		</if>
+		orderno IN
+		<foreach collection="ordernos" item="orderno" index="index"
+			open="(" close=")" separator=",">
+			#{orderno}
+		</foreach>
+	</update>
+		
+	<!-- 系统自动关闭7天未跟进工单。 -->
+	<update id="autoCloseWorkOrder" parameterType="com.lss.core.vo.admin.params.WorkOrderParams" >
+	  <![CDATA[ 
+	 	 UPDATE  ls_workorder SET `status`=5,
+	 	  followuptime=NOW(), 
+	 	  followupremarks ='关闭工单！关闭原因：7天未跟进,系统关闭'  
+	 	  where followuptime<#{endCloseTime} 
+	 	  AND `status`  in(1,2,3) 
+  		]]>
+  	</update>
+  	
+  	<select id="findOrderNo" parameterType="java.lang.String" resultType="java.lang.String">
+  		SELECT orderno from ls_workorder 
+  		WHERE `status` != 5 
+  		and userid = (SELECT userid from ls_user WHERE phone = #{phone,jdbcType=VARCHAR})
+  	</select>
+  	
+  	<update id="updateIsReturn" parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+  		update ls_workorder set is_return = #{isReturn}
+  		where orderno in
+  		<foreach collection="ordernos" item="orderno" open="(" close=")" separator=",">
+  			#{orderno}
+  		</foreach>
+  	</update>
+  	
+  	<select id="findOrderNoByUserId" parameterType="java.lang.String" resultType="java.lang.String">
+  		select orderno from ls_workorder 
+  		where userid = #{userId} 
+  		order by createtime DESC
+  		limit 1;
+  	</select>
+  	
+  	<select id="reserveCount" parameterType="com.lss.core.vo.admin.params.WorkOrderParams" resultType="java.lang.Integer">
+  		select count(*) from ls_workorder 
+  		<where>
+  			<if test="adminids != null and adminids.size()>0">
+				adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+			</if>
+			<if test="adminid != null">
+				AND adminid=#{adminid}
+			</if>
+  			<if test="start != null">
+				AND reservedate &gt;= #{start}
+			</if>
+			<if test="end != null">
+				AND reservedate &lt;= #{end}
+			</if>
+			<if test="isRemind != null">
+				AND is_remind = #{isRemind}
+			</if>
+			<if test="times != null">
+				AND reservetime in
+				<foreach collection="times" item="time" open="(" close=")" separator=",">
+					#{time}
+				</foreach>
+			</if>
+  		</where>
+  	</select>
+  	
+  	<update id="updateIsRemindStatus" parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+  		update ls_workorder
+  		set is_remind = #{isRemind}
+  		<where>
+  			<if test="adminids != null and adminids.size()>0">
+				adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+			</if>
+			<if test="adminid != null">
+				AND adminid=#{adminid}
+			</if>
+  			<if test="start != null">
+				AND reservedate &gt;= #{start}
+			</if>
+			<if test="end != null">
+				AND reservedate &lt;= #{end}
+			</if>
+			AND reservetime in
+			<foreach collection="times" item="time" open="(" close=")" separator=",">
+				#{time}
+			</foreach>
+  		</where>
+  	</update>
+  	
+  	<select id="findWordOrderByOrderNo" parameterType="java.lang.String" resultMap="BaseResultMap">
+  		select * from ls_workorder
+  		where orderno = #{orderno}
+  	</select>
+  	
+  	<select id="findAdminIds" parameterType="com.lss.core.vo.admin.params.WorkOrderParams" resultType="java.lang.Integer">
+  		select distinct adminid
+  		from ls_workorder
+  		where orderno in
+  		<foreach collection="ordernos" item="orderno" open="(" close=")" separator=",">
+  			#{orderno}
+  		</foreach>
+  	</select>
+  	
+  	<update id="offerWorkOrder" parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+  		update ls_workorder
+  		set to_me = #{toMe},
+  		from_me = #{fromMe}
+  		where orderno = #{orderNo}
+  	</update>
+  	
+  	
+  	<select id="offerToMe" resultType="com.lss.core.vo.admin.WorkOrderVo"
+		parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+		SELECT a.orderno,b.`name`,b.sex,b.phone,b.sourcedate,c.tagname source,d.shortname
+		clinicname,e.tagname project,f.`name` adminname,a.`level`,g.`name`
+		doctorname,a.returndate,a.clinicid,a.projectid,a.adminid,a.doctorid,a.reservetime,a.reservedate,a.isclue,a.worknotes
+		,a.amount,a.receivablesamt, a.createtime, a.closereason ,b.sourcename2 ,a.`status`,a.followup,b.lablenames, 
+    	b.lableremarks,b.userid ,a.followuptime,a.followupremarks,a.allottime,a.is_return isReturn,a.to_me toMe,a.from_me fromMe
+		FROM ls_workorder a
+		LEFT JOIN ls_user b ON
+		a.userid=b.userid
+		LEFT JOIN
+		ls_worktag c ON b.sourceid=c.tagid
+		LEFT JOIN
+		ls_clinic d ON
+		a.clinicid=d.clinicid
+		LEFT JOIN ls_worktag e ON
+		a.projectid=e.tagid
+		LEFT
+		JOIN ls_admin f ON a.adminid=f.adminid
+		LEFT
+		JOIN ls_admin g ON
+		a.doctorid=g.adminid 
+		<where>
+		<if test="name != null">
+			AND b.`name` like CONCAT('%',#{name},'%')
+		</if>
+		<if test="phone != null">
+			AND b.phone like CONCAT(#{phone},'%') 
+		</if>
+		<if test="adminid != null">
+			AND a.adminid=#{adminid}
+		</if>
+		<if test="adminids != null and adminids.size()>0">
+			and a.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		 and a.to_me like CONCAT('%',#{toMe},'%')
+		 and a.status != 5
+		 </where>
+		 ORDER BY createtime DESC
+		 LIMIT #{index},#{limit}
+	</select>
+  	
+  	
+  	<select id="offerToMeCount" parameterType="com.lss.core.vo.admin.params.WorkOrderParams" resultType="java.lang.Integer">
+  		SELECT COUNT(1) FROM ls_workorder a LEFT JOIN ls_user b ON
+		a.userid=b.userid 
+  		<where>
+  			a.to_me like CONCAT('%',#{toMe},'%')
+	  		and a.status != 5
+	  		<if test="name != null">
+				AND b.`name` like CONCAT('%',#{name},'%')
+			</if>
+			<if test="phone != null">
+				AND b.phone like CONCAT(#{phone},'%') 
+			</if>
+			<if test="adminid != null">
+				AND a.adminid=#{adminid}
+			</if>
+  		</where>
+  	</select>
+  	
+  	
+  	<select id="offerFromMe" resultType="com.lss.core.vo.admin.WorkOrderVo"
+		parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+		SELECT a.orderno,b.`name`,b.sex,b.phone,b.sourcedate,c.tagname source,d.shortname
+		clinicname,e.tagname project,f.`name` adminname,a.`level`,g.`name`
+		doctorname,a.returndate,a.clinicid,a.projectid,a.adminid,a.doctorid,a.reservetime,a.reservedate,a.isclue,a.worknotes
+		,a.amount,a.receivablesamt, a.createtime, a.closereason ,b.sourcename2 ,a.`status`,a.followup,b.lablenames, 
+    	b.lableremarks,b.userid ,a.followuptime,a.followupremarks,a.allottime,a.is_return isReturn,a.to_me toMe,a.from_me fromMe
+		FROM ls_workorder a
+		LEFT JOIN ls_user b ON
+		a.userid=b.userid
+		LEFT JOIN
+		ls_worktag c ON b.sourceid=c.tagid
+		LEFT JOIN
+		ls_clinic d ON
+		a.clinicid=d.clinicid
+		LEFT JOIN ls_worktag e ON
+		a.projectid=e.tagid
+		LEFT
+		JOIN ls_admin f ON a.adminid=f.adminid
+		LEFT
+		JOIN ls_admin g ON
+		a.doctorid=g.adminid 
+		<where>
+		<if test="name != null">
+			AND b.`name` like CONCAT('%',#{name},'%')
+		</if>
+		<if test="phone != null">
+			AND b.phone like CONCAT(#{phone},'%') 
+		</if>
+		<if test="adminid != null">
+			AND a.adminid=#{adminid}
+		</if>
+		<if test="adminids != null and adminids.size()>0">
+			and a.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
+		</if>
+		and a.from_me = #{fromMe}
+  		and a.status != 5
+		 </where>
+		 ORDER BY createtime DESC
+		 LIMIT #{index},#{limit}
+	</select>
+  	
+  	<select id="offerFromMeCount" parameterType="com.lss.core.vo.admin.params.WorkOrderParams" resultType="java.lang.Integer">
+  		SELECT COUNT(1) FROM ls_workorder a LEFT JOIN ls_user b ON
+		a.userid=b.userid 
+  		<where>
+  			and a.from_me = #{fromMe}
+  			and a.status != 5
+	  		<if test="name != null">
+				AND b.`name` like CONCAT('%',#{name},'%')
+			</if>
+			<if test="phone != null">
+				AND b.phone like CONCAT(#{phone},'%') 
+			</if>
+			<if test="adminid != null">
+				AND a.adminid=#{adminid}
+			</if>
+  		</where>
+  	</select>
+  	
+  	<update id="cancleOffer" parameterType="com.lss.core.vo.admin.params.WorkOrderParams">
+  		update ls_workorder
+  		set to_me = null,from_me = null
+  		where orderno = #{orderNo}
+  	</update>
+  	
+</mapper>

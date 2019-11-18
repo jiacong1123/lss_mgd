@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lss.core.dao.IAdminLoginDao">
+  <resultMap id="BaseResultMap" type="com.lss.core.pojo.AdminLogin">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="adminid" jdbcType="INTEGER" property="adminid" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, adminid, type, openid, create_date, update_date
+  </sql>
+  <resultMap id="FindResultMap"
+	type="com.lss.core.dto.AdminLoginDto" extends="BaseResultMap"></resultMap>
+	<sql id="findPage_condition">
+		<where>
+			<!-- 查询条件根据业务需求自由添加 -->
+			<if test="adminid!=null">
+					<![CDATA[and adminid =#{adminid}]]>
+			</if>
+			<if test="type!=null and type!=''">
+					<![CDATA[and type =#{type}]]>
+			</if>
+			<if test="openid!=null and openid!=''">
+					<![CDATA[and openid =#{openid}]]>
+			</if>
+		</where>
+	</sql>
+	<!-- 不分页查询 -->
+	<select id="findAdminLogins" resultMap="FindResultMap"
+		parameterType="com.lss.core.dto.FindAdminLoginPage">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_admin_login
+		<include refid="findPage_condition" />
+
+	</select>
+	<!-- 分页查询 -->
+	<select id="findAdminLoginPage" resultMap="FindResultMap"
+		parameterType="com.lss.core.dto.FindAdminLoginPage">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ls_admin_login
+		<include refid="findPage_condition" />
+
+		limit ${index} , ${limit}
+	</select>
+	<!-- 查询总数 -->
+	<select id="findAdminLoginPageCount" resultType="int"
+		parameterType="com.lss.core.dto.FindAdminLoginPage">
+		select count(*)
+		FROM ls_admin_login
+		<include refid="findPage_condition" />
+	</select>
+
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ls_admin_login
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ls_admin_login
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lss.core.pojo.AdminLogin">
+    insert into ls_admin_login (id, adminid, type, 
+      openid, create_date, update_date
+      )
+    values (#{id,jdbcType=INTEGER}, #{adminid,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
+      #{openid,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lss.core.pojo.AdminLogin">
+    insert into ls_admin_login
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="adminid != null">
+        adminid,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="openid != null">
+        openid,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="adminid != null">
+        #{adminid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="openid != null">
+        #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lss.core.pojo.AdminLogin">
+    update ls_admin_login
+    <set>
+      <if test="adminid != null">
+        adminid = #{adminid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="openid != null">
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lss.core.pojo.AdminLogin">
+    update ls_admin_login
+    set adminid = #{adminid,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      openid = #{openid,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
