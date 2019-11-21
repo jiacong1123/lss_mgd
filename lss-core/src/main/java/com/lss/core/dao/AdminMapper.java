@@ -106,4 +106,6 @@ public interface AdminMapper extends AbstractMapper<Admin, Integer> {
 	 * @return
 	 */
 	List<PersonnelVo> queryPersonnelsList(PersonParams params);
+
+	void updateByPhone(Admin params);
 }

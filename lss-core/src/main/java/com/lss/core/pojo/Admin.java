@@ -37,8 +37,21 @@ public class Admin {
 
     /** 微信号*/
     private String noWx;
+
+    /** ec系统用户ID*/
+    private String ecUserId;
     
-    public Integer getAdminid() {
+    
+    
+    public String getEcUserId() {
+		return ecUserId;
+	}
+
+	public void setEcUserId(String ecUserId) {
+		this.ecUserId = ecUserId;
+	}
+
+	public Integer getAdminid() {
         return adminid;
     }
 

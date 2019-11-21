@@ -41,6 +41,28 @@ public class LoginAdmin {
 	/** 客户直通车 IM 登录信息*/
 	private ZtcImGuidMember guidMember;
 	
+	private String phone;
+	
+	 /** ec系统用户ID*/
+    private String ecUserId;
+    
+	
+	public String getEcUserId() {
+		return ecUserId;
+	}
+
+	public void setEcUserId(String ecUserId) {
+		this.ecUserId = ecUserId;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
 	public Integer getAdminid() {
 		return adminid;
 	}

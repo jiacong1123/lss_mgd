@@ -17,6 +17,7 @@
     	<result column="org_id" jdbcType="INTEGER" property="orgId" />
 	    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
 	    <result column="no_wx" jdbcType="VARCHAR" property="noWx" />
+	    <result column="ec_userid" jdbcType="VARCHAR" property="ecUserId" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		adminid, clinicid, doctorid, loginame, loginpwd, name,
@@ -215,7 +216,7 @@
   </update>
 	<select id="loginAdmin" resultMap="BaseResultMap"
 		parameterType="com.lss.core.vo.admin.params.AdminParams">
-		SELECT adminid,clinicid,doctorid,`name`,`status` FROM
+		SELECT adminid,clinicid,doctorid,`name`,`status`,phone,ec_userid FROM
 		ls_admin WHERE loginame=#{name} AND loginpwd=#{password} AND `status` &gt;= 0
 	</select>
 	<select id="adminCount" resultType="java.lang.Integer"
@@ -347,4 +348,10 @@
         		and a.`name` like CONCAT('%',#{adminName,jdbcType=VARCHAR},'%' )
       	</if>
 	</select>
+	
+	<update id="updateByPhone" parameterType="com.lss.core.pojo.Admin">
+		update ls_admin
+		set ec_userid = #{ecUserId}
+		where phone =#{phone}
+	</update>
 </mapper>

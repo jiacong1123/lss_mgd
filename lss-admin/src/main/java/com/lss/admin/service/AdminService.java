@@ -137,4 +137,10 @@ public interface AdminService {
 	 * @return
 	 */
 	ReturnVo personnelList(PersonParams params, LoginAdmin loginAdmin);
+
+	/**
+	 * 根据手机号更新ec_userid
+	 * @param params
+	 */
+	void updateByPhone(Admin params);
 }

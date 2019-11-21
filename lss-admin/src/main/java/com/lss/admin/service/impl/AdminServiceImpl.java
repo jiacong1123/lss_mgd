@@ -82,6 +82,8 @@ public class AdminServiceImpl implements AdminService {
 				vo.setName(admin.getName());
 				vo.setClinicid(admin.getClinicid());
 				vo.setDoctorid(admin.getDoctorid());
+				vo.setPhone(admin.getPhone());
+				vo.setEcUserId(admin.getEcUserId());
 				// 查询角色id
 				List<Integer> list = MapperManager.adminRoleMapper
 						.queryRoleids(admin.getAdminid());
@@ -612,6 +614,11 @@ public class AdminServiceImpl implements AdminService {
 		result.setResult(ResponseCode.success);
 		result.setMsg(ResponseCode.successMsg);
 		return result;
+	}
+
+	@Override
+	public void updateByPhone(Admin params) {
+		MapperManager.adminMapper.updateByPhone(params);
 	}
 	
 }

@@ -3,13 +3,25 @@
  */
 package com.lss.admin.controller;
 
+import java.io.IOException;
+import java.net.URLDecoder;
+
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lss.admin.base.BaseController;
 import com.lss.admin.base.ServiceManager;
 import com.lss.admin.service.ICallRecordService;
@@ -18,7 +30,9 @@ import com.lss.core.constant.ResponseCode;
 import com.lss.core.dto.FindCallRecordPage;
 import com.lss.core.dto.FindSmsRecordPage;
 import com.lss.core.emus.ProcessStatus;
+import com.lss.core.util.MD5;
 import com.lss.core.vo.ReturnVo;
+import com.lss.core.vo.admin.EcPhoneVo;
 import com.lss.core.vo.admin.LoginAdmin;
 import com.lss.core.vo.admin.WorkOrderVo;
 
@@ -35,11 +49,20 @@ import com.lss.core.vo.admin.WorkOrderVo;
 @RequestMapping("phone")
 public class PhoneController extends BaseController {
 	
+	private static final Logger log = LoggerFactory.getLogger(PhoneController.class);
+	
 	@Resource
 	ICallRecordService callRecordService;
 	
 	@Resource
 	ISmsRecordService smsRecordService;
+	
+	//EC电话常量
+	private static String CALL_URL = "https://open.workec.com/v2/record/call";
+	private static String AppID = "547800367602073600";
+	private static String CorpID = "4943442";
+	private static String AppSecret = "5LMq4CCtuSfo6J9M3Uu";
+			
 	
 	/**
 	 * 拨打电话前绑定小号。
@@ -145,5 +168,98 @@ public class PhoneController extends BaseController {
 		vo = callRecordService.updateCallRecordStatus(param);
 		return vo;
 	}
+	
+	/**
+	 * 通过EC拨打电话
+	 * @param param
+	 * @return
+	 */
+	@RequestMapping("/ecCall")
+	public ReturnVo ecCall(@RequestBody EcPhoneVo phoneVo) {
+		ReturnVo returnVo = new ReturnVo();
+		JSONObject jsonParam = new JSONObject();
+		jsonParam.put("userid", phoneVo.getUserId());
+		jsonParam.put("phone", phoneVo.getCallPhone());
+		JSONObject httpPost = httpPost(CALL_URL, jsonParam);
+		int code = (int) httpPost.get("code");
+		if(null != httpPost && 200==code) {
+			returnVo.setObj(httpPost);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+		}else {
+			returnVo.setResult(code);
+			returnVo.setMsg(httpPost.get("msg").toString());
+		}
+		return returnVo;
+	}
+	
+	/**
+     * post请求
+     *
+     * @param url            url地址
+     * @param jsonParam      参数
+     * @param noNeedResponse 不需要返回结果
+     * @param token          header里面Authorization的值
+     * @return
+     */
+    public static JSONObject httpPost(String url, JSONObject jsonParam) {
+        //post请求返回结果
+        JSONObject jsonResult = null;
+        CloseableHttpClient client = getHttpClient();
+        HttpPost method = new HttpPost(url);
+        try {
+            if (null != jsonParam) {
+                //解决中文乱码问题
+                StringEntity entity = new StringEntity(jsonParam.toString(), "utf-8");
+                entity.setContentEncoding("UTF-8");
+                entity.setContentType("application/json");
+                method.setEntity(entity);
+            }
+            
+            method.setHeader("X-Ec-Cid", CorpID);
+            String timeStamp = System.currentTimeMillis()+"";
+            method.setHeader("X-Ec-TimeStamp",timeStamp );
+            String sign = MD5.encrypt("appId="+AppID+"&appSecret="+AppSecret+"&timeStamp="+timeStamp);
+            method.setHeader("X-Ec-Sign", sign);
+
+            CloseableHttpResponse result = client.execute(method);
+            url = URLDecoder.decode(url, "UTF-8");
+            /**请求发送成功，并得到响应**/
+            if (result.getStatusLine().getStatusCode() == 200) {
+                String str = "";
+                try {
+                    /**读取服务器返回过来的json字符串数据**/
+                    str = EntityUtils.toString(result.getEntity());
+                    /**把json字符串转换成json对象**/
+                    jsonResult = JSONObject.parseObject(str);
+                } catch (Exception e) {
+                	log.error("post请求提交失败:" + url);
+                    log.error("");
+                } finally {
+                    result.close();
+                }
+            }
+        } catch (IOException e) {
+            log.error("post请求提交失败:" + url, e);
+        } finally {
+            try {
+                closeHttpClient(client);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return jsonResult;
+    }
+    
+    
+    private static CloseableHttpClient getHttpClient() {
+        return HttpClients.createDefault();
+    }
+
+    private static void closeHttpClient(CloseableHttpClient client) throws IOException {
+        if (client != null) {
+            client.close();
+        }
+    }
 }
 
