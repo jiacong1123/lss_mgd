@@ -83,15 +83,13 @@ public class CommonServiceImpl implements CommonService {
 			model.setSourcedate(dt);
 			model.setCreatetime(dt);
 			if (MapperManager.userMapper.insertSelective(model) > 0) {
-				// 2019-11-06 新需求:线上生产的客户数据不插入待分配工单里边
-				/*
-				 * WorkOrder order = new WorkOrder(); String orderno =
-				 * GenerateOrderno.getInstance().GenerateOrder(); order.setOrderno(orderno);
-				 * order.setUserid(model.getUserid());
-				 * order.setProjectid(getProjectid(params.getUrl())); order.setCreatetime(dt);
-				 * order.setWorknotes(params.getNotes());
-				 * MapperManager.workOrderMapper.insertSelective(order);
-				 */
+			  // 2019-11-06 新需求:线上生产的客户数据不插入待分配工单里边,生产一个状态为8线上新导入工单
+			  WorkOrder order = new WorkOrder(); String orderno = GenerateOrderno.getInstance().GenerateOrder(); order.setOrderno(orderno);
+			  order.setUserid(model.getUserid());
+			  order.setProjectid(getProjectid(params.getUrl())); order.setCreatetime(dt);
+			  order.setWorknotes(params.getNotes());
+			  order.setStatus(8);
+			  MapperManager.workOrderMapper.insertSelective(order);
 			}
 		}
 		result.setResult(ResponseCode.success);

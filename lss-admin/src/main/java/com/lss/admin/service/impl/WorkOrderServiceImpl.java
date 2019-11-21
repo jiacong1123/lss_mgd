@@ -675,7 +675,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		WorkRecord record = new WorkRecord();
 		record.setOrderno(orderno);
 		record.setAdminid(adminid);
-		record.setContent(content);
+		record.setContent("回访沟通内容:"+content);
 		record.setTalktime(talktime);
 		record.setCreatetime(now);
 		MapperManager.workRecordMapper.insertSelective(record);
@@ -684,7 +684,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		WorkOrder updateWorkOrder = new WorkOrder();
 		updateWorkOrder.setOrderno(orderno);
 		updateWorkOrder.setFollowuptime(now);
-		updateWorkOrder.setFollowupremarks(content);
+		updateWorkOrder.setFollowupremarks("回访沟通内容:"+content);
 		MapperManager.workOrderMapper.updateByPrimaryKeySelective(updateWorkOrder);
 		return record.getId();
 	}
@@ -1332,6 +1332,14 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			for (String orderNo : ordernos) {
 				params.setOrderNo(orderNo);
 				MapperManager.workOrderMapper.offerWorkOrder(params);
+				
+				//最近跟进时间及操作
+				WorkOrder updateWorkOrder = new WorkOrder();
+				updateWorkOrder.setOrderno(orderNo);
+				updateWorkOrder.setFollowuptime(new Date());
+				updateWorkOrder.setFollowupremarks(loginAdmin.getName()+" 新增客户共享同事:"+params.getAdminNames());
+				MapperManager.workOrderMapper.updateByPrimaryKeySelective(updateWorkOrder);
+				
 				//新增工单流程记录
 				WorkRecord record = new WorkRecord();
 				record.setAdminid(params.getAdminid());
@@ -1400,15 +1408,25 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		log.debug("cancleOffer(WorkOrderParams params = {})-start",params);
 		ReturnVo returnVo = new ReturnVo();
 		try {
-			params.setOrderNo(params.getOrderNo());
-			MapperManager.workOrderMapper.cancleOffer(params);
-			WorkRecord record = new WorkRecord();
-			record.setAdminid(params.getAdminid());
-			record.setCreatetime(new Date());
-			record.setOrderno(params.getOrderNo());
-			record.setContent(loginAdmin.getName()+" 取消共享工单");
-			MapperManager.workRecordMapper.insertSelective(record);
-			
+			List<String> ordernos = params.getOrdernos();
+			for (String orderno : ordernos) {
+				params.setOrderNo(orderno);
+				MapperManager.workOrderMapper.cancleOffer(params);
+				
+				//最近跟进时间及操作
+				WorkOrder updateWorkOrder = new WorkOrder();
+				updateWorkOrder.setOrderno(orderno);
+				updateWorkOrder.setFollowuptime(new Date());
+				updateWorkOrder.setFollowupremarks(loginAdmin.getName()+" 取消共享工单");
+				MapperManager.workOrderMapper.updateByPrimaryKeySelective(updateWorkOrder);
+				
+				WorkRecord record = new WorkRecord();
+				record.setAdminid(params.getAdminid());
+				record.setCreatetime(new Date());
+				record.setOrderno(orderno);
+				record.setContent(loginAdmin.getName()+" 取消共享工单");
+				MapperManager.workRecordMapper.insertSelective(record);
+			}
 			returnVo.setResult(ResponseCode.success);
 			returnVo.setMsg(ResponseCode.successMsg);
 			return returnVo;

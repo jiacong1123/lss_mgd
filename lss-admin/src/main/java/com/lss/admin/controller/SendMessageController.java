@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import com.lss.admin.base.ServiceManager;
 import com.lss.core.base.MapperManager;
 import com.lss.core.constant.ResponseCode;
 import com.lss.core.pojo.MessageRecord;
+import com.lss.core.pojo.WorkOrder;
 import com.lss.core.pojo.WorkRecord;
 import com.lss.core.vo.ReturnVo;
 import com.lss.core.vo.admin.UserVo;
@@ -117,7 +119,7 @@ public class SendMessageController extends BaseController{
 		if(null != r && r.getCode() == 0) {
 			List<SmsSingleSend> data = r.getData().getData();
 			//记录发送失败的手机号码
-			StringBuilder phone = new StringBuilder("发送失败的手机号码:");
+			StringBuilder phone = new StringBuilder();
 			for (SmsSingleSend smsSingleSend : data) {
 				if(smsSingleSend.getCode()!=0) {
 					phone.append(smsSingleSend.getMobile()).append(":").append(smsSingleSend.getMsg()).append(",");
@@ -150,10 +152,22 @@ public class SendMessageController extends BaseController{
 					record.setCreatetime(new Date());
 					record.setContent(loginAdmin.getName()+" 发送短信给客户:"+user.getName());
 					MapperManager.workRecordMapper.insertSelective(record);
+					
+					//最近跟进时间及操作
+					WorkOrder updateWorkOrder = new WorkOrder();
+					updateWorkOrder.setOrderno(orderNo);
+					updateWorkOrder.setFollowuptime(new Date());
+					updateWorkOrder.setFollowupremarks(loginAdmin.getName()+" 发送短信给客户:"+user.getName());
+					MapperManager.workOrderMapper.updateByPrimaryKeySelective(updateWorkOrder);
 				}
 			}
 			returnVo.setResult(ResponseCode.success);
-			returnVo.setMsg(phone.toString());
+			String failMsg = phone.toString();
+			if(StringUtils.isEmpty(failMsg)) {
+				returnVo.setMsg(ResponseCode.successMsg);
+			}else {
+				returnVo.setMsg("发送失败的手机号码:"+failMsg);
+			}
 			return returnVo;
 		}else {
 			returnVo.setResult(ResponseCode.failure);

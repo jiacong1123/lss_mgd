@@ -459,7 +459,7 @@ public class WorkOrderController extends BaseController {
 	 */
 	@RequestMapping(value="/cancleOffer")
 	public ReturnVo cancleOffer(@RequestBody WorkOrderParams params) {
-		if(null==params.getOrderNo()) {
+		if(null==params.getOrdernos()) {
 			throw new LssException(ResponseCode.parameterError, "请选择要取消共享的工单!");
 		}
 		return ServiceManager.workOrderService.cancleOffer(params,loginAdmin);

@@ -6,7 +6,7 @@ public class WorkOrder {
     private String orderno;
 
     private Integer userid;
-    //状态 0未分配 1待跟进 2已预约 3已到店 4已完成 5已关闭 10新分配 99全部 98待回收列表
+    //状态 0未分配 1待跟进 2已预约 3已到店 4已完成 5已关闭 10新分配 99全部 98待回收列表 8线上新导入
     private Integer status;
 
     private Date createtime;
