@@ -80,7 +80,7 @@ public class StCallController extends BaseController {
 		if(StringUtils.isNotEmpty(params.getStartDateStr())) {
 			params.setStartDate(DateUtils.parseDate(params.getStartDateStr()));
 		}
-		if(StringUtils.isNotEmpty(params.getStartDateStr())) {
+		if(StringUtils.isNotEmpty(params.getEndDateStr())) {
 			params.setEndDate(DateUtils.parseDate(params.getEndDateStr()));	
 		}
 		LoginAdmin admin = loginAdmin;
@@ -113,7 +113,7 @@ public class StCallController extends BaseController {
 		if(StringUtils.isNotEmpty(params.getStartDateStr())) {
 			params.setStartDate(DateUtils.parseDate(params.getStartDateStr()));
 		}
-		if(StringUtils.isNotEmpty(params.getStartDateStr())) {
+		if(StringUtils.isNotEmpty(params.getEndDateStr())) {
 			params.setEndDate(DateUtils.parseDate(params.getEndDateStr()));	
 		}
 		LoginAdmin admin = loginAdmin;

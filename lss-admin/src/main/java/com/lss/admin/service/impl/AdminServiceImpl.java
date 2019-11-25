@@ -620,5 +620,10 @@ public class AdminServiceImpl implements AdminService {
 	public void updateByPhone(Admin params) {
 		MapperManager.adminMapper.updateByPhone(params);
 	}
+
+	@Override
+	public List<String> selectUserIds() {
+		return MapperManager.adminMapper.selectUserIds();
+	}
 	
 }

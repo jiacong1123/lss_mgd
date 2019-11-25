@@ -108,4 +108,8 @@ public interface AdminMapper extends AbstractMapper<Admin, Integer> {
 	List<PersonnelVo> queryPersonnelsList(PersonParams params);
 
 	void updateByPhone(Admin params);
+
+	List<String> selectUserIds();
+
+	Admin selectAdminIdByUserId(int userId);
 }

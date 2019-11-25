@@ -229,6 +229,8 @@ public class WorkOrderController extends BaseController {
 		Collections.addAll(ordernos, ordernoArr);
 		params.setOrdernos(ordernos);
 		ServiceManager.workOrderService.updateIsReturn(params);
+		//关闭工单时取消工单共享状态
+		ServiceManager.workOrderService.cancleOffer(params,loginAdmin);
 		return ServiceManager.workOrderService.close(order, loginAdmin);
 	}
 

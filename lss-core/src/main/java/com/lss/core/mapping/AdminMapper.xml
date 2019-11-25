@@ -345,7 +345,7 @@
 			and a.adminid in <foreach collection="adminids" item="aid" open="(" close=")" separator=",">#{aid}</foreach>
 		</if>
 		<if test="adminName!= null and adminName!='' " >
-        		and a.`name` like CONCAT('%',#{adminName,jdbcType=VARCHAR},'%' )
+       		and a.`name` like CONCAT('%',#{adminName,jdbcType=VARCHAR},'%' )
       	</if>
 	</select>
 	
@@ -354,4 +354,17 @@
 		set ec_userid = #{ecUserId}
 		where phone =#{phone}
 	</update>
+	
+	<select id="selectUserIds" resultType="java.lang.String">
+		select ec_userid
+		from ls_admin 
+		where ec_userid is not null
+	</select>
+	
+	<select id="selectAdminIdByUserId" parameterType="java.lang.Integer" resultType="com.lss.core.pojo.Admin">
+		select <include refid="Base_Column_List"/>
+		from ls_admin 
+		where ec_userid = #{userId}
+	</select>
+	
 </mapper>

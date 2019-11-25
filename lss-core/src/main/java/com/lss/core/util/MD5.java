@@ -118,7 +118,7 @@ public class MD5 {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("E10ADC3949BA59ABBE56E057F20F883E".substring(0,8));
-		System.out.println(MD5.encrypt("E10ADC39"));
+		String str="appId=547800367602073600&appSecret=5LMq4CCtuSfo6J9M3Uu&timeStamp=1574302585926";
+		System.out.println(MD5.encrypt(str));
 	}
 }

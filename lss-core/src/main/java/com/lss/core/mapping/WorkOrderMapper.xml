@@ -829,7 +829,7 @@ WHERE a.isclue=1
   		</foreach>
   	</update>
   	
-  	<select id="findOrderNoByUserId" parameterType="java.lang.String" resultType="java.lang.String">
+  	<select id="findOrderNoByUserId" parameterType="java.lang.Integer" resultType="java.lang.String">
   		select orderno from ls_workorder 
   		where userid = #{userId} 
   		order by createtime DESC

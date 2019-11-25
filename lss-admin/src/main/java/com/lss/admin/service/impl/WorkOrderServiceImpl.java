@@ -616,7 +616,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		order.setDoctorid(0);
 		if (MapperManager.workOrderMapper.followupWorkOrder(order) > 0) {
 			// 添加记录
-			insertWorkRecord(order.getOrderno(), admin.getAdminid(), order.getComplaint(), order.getFollowup());
+			insertWorkRecord(order.getOrderno(), admin.getAdminid(), "跟进记录:"+order.getComplaint(), order.getFollowup());
 			result.setResult(ResponseCode.success);
 			result.setMsg(ResponseCode.successMsg);
 		} else {
@@ -675,7 +675,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		WorkRecord record = new WorkRecord();
 		record.setOrderno(orderno);
 		record.setAdminid(adminid);
-		record.setContent("回访沟通内容:"+content);
+		record.setContent(content);
 		record.setTalktime(talktime);
 		record.setCreatetime(now);
 		MapperManager.workRecordMapper.insertSelective(record);
@@ -684,7 +684,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		WorkOrder updateWorkOrder = new WorkOrder();
 		updateWorkOrder.setOrderno(orderno);
 		updateWorkOrder.setFollowuptime(now);
-		updateWorkOrder.setFollowupremarks("回访沟通内容:"+content);
+		updateWorkOrder.setFollowupremarks(content);
 		MapperManager.workOrderMapper.updateByPrimaryKeySelective(updateWorkOrder);
 		return record.getId();
 	}
@@ -1310,10 +1310,14 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			}
 			//首先判断所选工单是本人的工单(通过工单号查询所属用户)
 			List<Integer> adminids = MapperManager.workOrderMapper.findAdminIds(params);
-			if(adminids!=null && adminids.size()>1) {
-				returnVo.setResult(ResponseCode.failure);
-				returnVo.setMsg("只允许共享自己的工单!");
-				return returnVo;
+			if(adminids!=null) {
+				for (Integer adminid : adminids) {
+					if(adminid!=loginAdmin.getAdminid()) {
+						returnVo.setResult(ResponseCode.failure);
+						returnVo.setMsg("只允许共享自己的工单!");
+						return returnVo;
+					}
+				}
 			}
 			List<String> ordernos = params.getOrdernos();
 			List<Integer> adminid = params.getAdminids();
@@ -1387,8 +1391,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		ReturnVo returnVo = new ReturnVo();
 		try {
 			int count = MapperManager.workOrderMapper.offerFromMeCount(params);
-			returnVo.setTotal(count);
 			if(count>0) {
+				returnVo.setTotal(count);
 				List<WorkOrder> list = MapperManager.workOrderMapper.offerFromMe(params);
 				returnVo.setObj(list);
 			}

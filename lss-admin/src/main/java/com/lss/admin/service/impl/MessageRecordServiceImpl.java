@@ -83,6 +83,7 @@ public class MessageRecordServiceImpl implements IMessageRecordService {
 				List<MessageRecordVo> list =  MapperManager.messageRecordMapper.messageList(messageRecordParams);
 				returnVo.setObj(list);
 			}
+			returnVo.setTotal(count);
 			returnVo.setResult(ResponseCode.success);
 			returnVo.setMsg(ResponseCode.successMsg);
 			return returnVo;

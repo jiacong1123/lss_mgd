@@ -143,4 +143,6 @@ public interface AdminService {
 	 * @param params
 	 */
 	void updateByPhone(Admin params);
+
+	List<String> selectUserIds();
 }
