@@ -133,5 +133,7 @@ public class SystemConstant {
 		//2019-10-17新增pc官网白名单
 		domainWhiteList.add("http://pcapi.leshasha.com");
 		domainWhiteList.add("http://lesasa.com");
+		//2019-11-26新增pc官网白名单
+		domainWhiteList.add("http://www.lesasa.com.cn");
 	}
 }

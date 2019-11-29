@@ -6,6 +6,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,8 +20,6 @@ import com.lss.core.dao.ICallRecordDao;
 import com.lss.core.emus.ProcessStatus;
 import com.lss.core.pojo.Admin;
 import com.lss.core.pojo.CallRecord;
-import com.lss.core.pojo.WorkOrder;
-import com.lss.core.pojo.WorkRecord;
 import com.lss.core.util.DateUtils;
 import com.lss.core.util.EcPhoneUtil;
 import com.lss.core.util.RedisUtil;
@@ -37,6 +37,8 @@ import com.lss.core.vo.admin.UserVo;
 @Lazy(false)
 public class EcPhoneRecordJob {
 
+	private static final Logger logger = LoggerFactory.getLogger(EcPhoneRecordJob.class);
+	
 	@Resource
 	private PhoneService phoneService;
 	@Resource
@@ -49,6 +51,8 @@ public class EcPhoneRecordJob {
 	@Scheduled(cron = "0 1 6-23 * * ?")  //每天的6-23时01分执行 正式
 //	@Scheduled(fixedDelay = 300000) // 测试用，5分钟执行一次
 	public void addRecord() {
+		Long ctime = System.currentTimeMillis();
+		logger.info("批次{}:开始处理EC通话记录。", ctime);
 		// 查询所有的userid
 		List<String> userList = ServiceManager.adminService.selectUserIds();
 		String startDate = DateUtils.format(new Date(), DateUtils.YYYYMMDD);
@@ -87,21 +91,6 @@ public class EcPhoneRecordJob {
 							UserVo userVo = MapperManager.userMapper.queryByPhone(result.getCalltono());
 							if(null!=userVo) {
 								records.setUserName(userVo.getName());
-								String orderno = MapperManager.workOrderMapper.findOrderNoByUserId(userVo.getUserid());
-								//新增工单流程
-								WorkRecord record = new WorkRecord();
-								record.setOrderno(orderno);
-								record.setAdminid(admin.getAdminid());
-								record.setContent("与: "+userVo.getName()+"通话!");
-								record.setTalktime(Integer.parseInt(result.getCalltime()));
-								record.setCreatetime(new Date());
-								MapperManager.workRecordMapper.insertSelective(record);
-								//更新工单最近联系
-								WorkOrder workOrder = new WorkOrder();
-								workOrder.setOrderno(orderno);
-								workOrder.setFollowuptime(new Date());
-								workOrder.setFollowupremarks("与: "+userVo.getName()+"通话!");
-								MapperManager.workOrderMapper.updateByPrimaryKeySelective(workOrder);
 							}
 							records.setCusNo(result.getCalltono());
 							records.setCusInfo(result.getCustomerName());
@@ -111,7 +100,7 @@ public class EcPhoneRecordJob {
 							callRecordDao.insertSelective(records);
 							
 							
-							RedisUtil.setString(result.getMd5(), EC_PHONE_RECORD_URL);
+							RedisUtil.setString(result.getMd5(), EC_PHONE_RECORD_URL, RedisUtil.EXRP_DAY);
 						}
 						
 					}
@@ -119,5 +108,6 @@ public class EcPhoneRecordJob {
 
 			}
 		}
+		logger.info("批次{}:开始处理通EC话记录完成。", ctime);
 	}
 }

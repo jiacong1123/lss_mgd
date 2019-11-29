@@ -46,7 +46,18 @@ public class LoginAdmin {
 	 /** ec系统用户ID*/
     private String ecUserId;
     
+    /** ec系统用户ID*/
+    private String microUserId;
+    
 	
+	public String getMicroUserId() {
+		return microUserId;
+	}
+
+	public void setMicroUserId(String microUserId) {
+		this.microUserId = microUserId;
+	}
+
 	public String getEcUserId() {
 		return ecUserId;
 	}

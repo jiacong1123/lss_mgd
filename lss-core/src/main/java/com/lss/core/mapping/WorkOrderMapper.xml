@@ -453,6 +453,9 @@
 			<when test="status == 98">
 				a.`status`  in(1,2,3)
 			</when>
+			<when test="status == 97">
+				a.`status`  != 8
+			</when>
 			<otherwise>
 				a.`status`=#{status}
 			</otherwise>
@@ -561,6 +564,9 @@
 			</when>
 			<when test="status == 98">
 				a.`status`  in(1,2,3)
+			</when>
+			<when test="status == 97">
+				a.`status`  != 8
 			</when>
 			<otherwise>
 				a.`status`=#{status}

@@ -112,4 +112,6 @@ public interface AdminMapper extends AbstractMapper<Admin, Integer> {
 	List<String> selectUserIds();
 
 	Admin selectAdminIdByUserId(int userId);
+
+	Admin selectAdminIdByMicroUserId(String microUserId);
 }

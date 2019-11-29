@@ -84,6 +84,7 @@ public class AdminServiceImpl implements AdminService {
 				vo.setDoctorid(admin.getDoctorid());
 				vo.setPhone(admin.getPhone());
 				vo.setEcUserId(admin.getEcUserId());
+				vo.setMicroUserId(admin.getMicroUserId());
 				// 查询角色id
 				List<Integer> list = MapperManager.adminRoleMapper
 						.queryRoleids(admin.getAdminid());
@@ -133,14 +134,16 @@ public class AdminServiceImpl implements AdminService {
 			admin.setOrgName(null);
 		}
 		ReturnVo result = new ReturnVo();
-		String msg = checkAdmin(admin);
-		if (!"".equals(msg)) {
-			result.setResult(ResponseCode.parameterError);
-			result.setMsg(msg);
-			return result;
-		}
+		
 		int res = 0;
 		if (admin.getAdminid() == null || admin.getAdminid().intValue() <= 0) {
+			String msg = checkAdmin(admin);
+			if (!"".equals(msg)) {
+				result.setResult(ResponseCode.parameterError);
+				result.setMsg(msg);
+				return result;
+			}
+			
 			if (ObjectUtil.isEmpty(admin.getLoginpwd())) {
 				// 默认123456
 				admin.setLoginpwd("123456");

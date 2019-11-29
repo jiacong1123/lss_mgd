@@ -7,6 +7,18 @@ public class EcPhoneVo {
 	private String callPhone;//被叫号码
 	
 	private String ecAccount;//EC帐号
+	
+	private String extnumber;
+	
+	
+
+	public String getExtnumber() {
+		return extnumber;
+	}
+
+	public void setExtnumber(String extnumber) {
+		this.extnumber = extnumber;
+	}
 
 	public String getUserId() {
 		return userId;

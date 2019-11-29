@@ -1,6 +1,7 @@
 package com.lss.core.util;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -20,15 +21,22 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONObject;
 
 public class HttpUtil {
 
+	private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
+	
 	public static CloseableHttpClient createSSLClientDefault() {
 		try {
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(
@@ -120,5 +128,71 @@ public class HttpUtil {
 		} catch (IOException e) {
 		}
 		return responseText;
+	}
+	
+	/**
+	 * post请求
+	 *
+	 * @param url            url地址
+	 * @param jsonParam      参数
+	 * @param noNeedResponse 不需要返回结果
+	 * @param token          header里面Authorization的值
+	 * @return
+	 */
+	public static JSONObject httpPost(String url, JSONObject jsonParam, String token) {
+		// post请求返回结果
+		JSONObject jsonResult = null;
+		CloseableHttpClient client = getHttpClient();
+		HttpPost method = new HttpPost(url);
+		try {
+			if (null != jsonParam) {
+				// 解决中文乱码问题
+				StringEntity entity = new StringEntity(jsonParam.toString(), "utf-8");
+				entity.setContentEncoding("UTF-8");
+				entity.setContentType("application/json");
+				method.setEntity(entity);
+			}
+			if (null != token) {
+				method.setHeader("Authorization", "Bearer " + token);
+			}
+
+			CloseableHttpResponse result = client.execute(method);
+			url = URLDecoder.decode(url, "UTF-8");
+			/** 请求发送成功，并得到响应 **/
+			if (result.getStatusLine().getStatusCode() == 200) {
+				String str = "";
+				try {
+					/** 读取服务器返回过来的json字符串数据 **/
+					str = EntityUtils.toString(result.getEntity());
+
+					/** 把json字符串转换成json对象 **/
+					jsonResult = JSONObject.parseObject(str);
+				} catch (Exception e) {
+					logger.error("post请求提交失败:" + url);
+					logger.error("");
+				} finally {
+					result.close();
+				}
+			}
+		} catch (IOException e) {
+			logger.error("post请求提交失败:" + url, e);
+		} finally {
+			try {
+				closeHttpClient(client);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return jsonResult;
+	}
+
+	private static CloseableHttpClient getHttpClient() {
+		return HttpClients.createDefault();
+	}
+
+	private static void closeHttpClient(CloseableHttpClient client) throws IOException {
+		if (client != null) {
+			client.close();
+		}
 	}
 }

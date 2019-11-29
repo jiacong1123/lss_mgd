@@ -18,6 +18,7 @@
 	    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
 	    <result column="no_wx" jdbcType="VARCHAR" property="noWx" />
 	    <result column="ec_userid" jdbcType="VARCHAR" property="ecUserId" />
+	    <result column="micro_userid" jdbcType="VARCHAR" property="microUserId" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		adminid, clinicid, doctorid, loginame, loginpwd, name,
@@ -193,6 +194,9 @@
       <if test="noWx != null">
         no_wx = #{noWx,jdbcType=VARCHAR},
       </if>
+      <if test="microUserId != null">
+        micro_userid = #{microUserId,jdbcType=VARCHAR},
+      </if>
     </set>
     where adminid = #{adminid,jdbcType=INTEGER}
   </update>
@@ -216,7 +220,7 @@
   </update>
 	<select id="loginAdmin" resultMap="BaseResultMap"
 		parameterType="com.lss.core.vo.admin.params.AdminParams">
-		SELECT adminid,clinicid,doctorid,`name`,`status`,phone,ec_userid FROM
+		SELECT adminid,clinicid,doctorid,`name`,`status`,phone,ec_userid,micro_userid FROM
 		ls_admin WHERE loginame=#{name} AND loginpwd=#{password} AND `status` &gt;= 0
 	</select>
 	<select id="adminCount" resultType="java.lang.Integer"
@@ -233,7 +237,9 @@
 		parameterType="com.lss.core.vo.admin.params.AdminParams">
 		SELECT
 		a.adminid,a.clinicid,a.loginame,a.`name`,a.phone,a.`status`,a.createtime,a.logintime,b.shortname
-		clinicname,a.caller_nos as callerNos,a.transfer_no as transferNo,a.org_id as orgId,a.org_name as orgName ,a.no_wx as noWx FROM ls_admin a
+		clinicname,a.caller_nos as callerNos,a.transfer_no as transferNo,a.org_id as orgId,a.org_name as orgName ,
+		a.no_wx as noWx,a.micro_userid as microUserId
+		FROM ls_admin a
 		LEFT JOIN ls_clinic b ON
 		a.clinicid=b.clinicid WHERE a.`status` &gt;= 0
 		<if test="name != null">
@@ -367,4 +373,9 @@
 		where ec_userid = #{userId}
 	</select>
 	
+	<select id="selectAdminIdByMicroUserId" parameterType="java.lang.String" resultType="com.lss.core.pojo.Admin">
+		select <include refid="Base_Column_List"/>
+		from ls_admin 
+		where micro_userid = #{microUserId}
+	</select>
 </mapper>
