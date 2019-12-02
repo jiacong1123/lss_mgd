@@ -48,8 +48,8 @@ public class EcPhoneRecordJob {
 	private static String EC_PHONE_RECORD_URL = "https://open.workec.com/record/telRecord";
 	private static String GET_EC_TOKEN_KEY = "getECtoken";
 
-	@Scheduled(cron = "0 1 6-23 * * ?")  //每天的6-23时01分执行 正式
-//	@Scheduled(fixedDelay = 300000) // 测试用，5分钟执行一次
+//	@Scheduled(cron = "0 1 6-23 * * ?")  //每天的6-23时01分执行 正式
+	@Scheduled(fixedDelay = 300000) // 测试用，5分钟执行一次
 	public void addRecord() {
 		Long ctime = System.currentTimeMillis();
 		logger.info("批次{}:开始处理EC通话记录。", ctime);

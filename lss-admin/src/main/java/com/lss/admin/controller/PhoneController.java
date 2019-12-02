@@ -191,14 +191,17 @@ public class PhoneController extends BaseController {
 		ReturnVo returnVo = new ReturnVo();
 		returnVo.setMsg(ResponseCode.failureMsg);
 		returnVo.setResult(ResponseCode.failure);
-		
+
 		JSONObject jsonObject = MicroSipUtil.call(phoneVo);
-		if(null != jsonObject) {
+		if (null != jsonObject) {
 			JSONObject data = jsonObject.getJSONObject("data");
-			int status = (int) data.get("status");
-			if(0==status) {
-				returnVo.setMsg(ResponseCode.successMsg);
-				returnVo.setResult(ResponseCode.success);
+			log.debug("超脑云拨打电话响应:" + data);
+			if (null != data) {
+				int status = (int) data.get("status");
+				if (0 == status) {
+					returnVo.setMsg(ResponseCode.successMsg);
+					returnVo.setResult(ResponseCode.success);
+				}
 			}
 		}
 		// 2019-11-25 新需求:通话时候即时新增工单流程,并更新最近联系信息!
