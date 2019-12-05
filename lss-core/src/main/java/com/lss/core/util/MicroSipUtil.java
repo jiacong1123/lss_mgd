@@ -129,6 +129,10 @@ public class MicroSipUtil {
 			String date = sft.format(new Date());
 			method.setParameter("starttime", date + " 00:00:00");
 			method.setParameter("endtime", date + " 23:59:59");
+			//所有记录一页返回
+			method.setParameter("currentpage", "1");
+			method.setParameter("itemsperpage", "1000");
+			
 			method.setParameter("syncflag", "3");
 			method.setParameter("direction", "3");
 			method.setParameter("callmethod", "0");

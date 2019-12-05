@@ -243,7 +243,7 @@ public class UserServiceImpl implements UserService {
 							//没有工单。不管，逻辑照旧
 							log.info("导入失败：客户{},手机号{}重复!",user.getName(),phone);
 							return 2;
-						}else if(0==findOrder.getStatus()) {//待分配，则进行分配
+						}else if(0==findOrder.getStatus()||8==findOrder.getStatus()) {//待分配，线上新导入 则进行分配
 							WorkOrder updateOrder=new WorkOrder();
 							updateOrder.setAdminid(admin.getAdminid());
 							//FixBug:1510导入客户信息，部分渠道没有分配日期

@@ -57,8 +57,8 @@ public class MicroSipCallRecord {
 		JSONObject jsonObject = MicroSipUtil.getRecord();
 		if (null != jsonObject) {
 			JSONObject data = jsonObject.getJSONObject("data");
-			logger.debug("处理超脑云通话记录响应:"+data);
 			if (null != data) {
+				logger.debug("处理超脑云通话记录响应:"+data);
 				int status = (int) data.get("status");
 				if (0 == status) {
 					JSONObject result = data.getJSONObject("result");
