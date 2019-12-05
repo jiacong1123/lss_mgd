@@ -73,8 +73,13 @@ public class MicroSipCallRecord {
 							CallRecord records = new CallRecord();
 							records.setRecordId(id + "");// 通话唯一标识
 							records.setType(bill.getString("direction"));
-							records.setShowNo(destnumber.substring(1));// 被叫号码
-							records.setCusNo(destnumber.substring(1));// 被叫号码
+							if(destnumber.startsWith("0")) {
+								records.setShowNo(destnumber.substring(1));// 被叫号码
+								records.setCusNo(destnumber.substring(1));// 被叫号码
+							}else {
+								records.setShowNo(destnumber);// 被叫号码
+								records.setCusNo(destnumber);// 被叫号码
+							}
 							records.setLlResult("ANSWERED");
 							records.setStartTime(bill.getString("starttime"));// 通话开始时间
 							records.setEndTime(bill.getString("endtime"));
@@ -107,8 +112,8 @@ public class MicroSipCallRecord {
 							if (null != admin) {
 								records.setAdminId(admin.getAdminid());
 								records.setAdminName(admin.getName());
+								records.setEmpNo(admin.getPhone());
 							}
-							records.setEmpNo(admin.getPhone());
 							// 通过手机号码查询工单系统客户
 							UserVo userVo = MapperManager.userMapper.queryByPhone(destnumber.substring(1));
 							if (null != userVo) {
