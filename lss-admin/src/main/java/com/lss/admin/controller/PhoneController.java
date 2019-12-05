@@ -195,8 +195,8 @@ public class PhoneController extends BaseController {
 		JSONObject jsonObject = MicroSipUtil.call(phoneVo);
 		if (null != jsonObject) {
 			JSONObject data = jsonObject.getJSONObject("data");
-			log.debug("超脑云拨打电话响应:" + data);
 			if (null != data) {
+				log.debug("超脑云拨打电话响应:" + data);
 				int status = (int) data.get("status");
 				if (0 == status) {
 					returnVo.setMsg(ResponseCode.successMsg);
