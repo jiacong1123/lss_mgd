@@ -135,5 +135,7 @@ public class SystemConstant {
 		domainWhiteList.add("http://lesasa.com");
 		//2019-11-26新增pc官网白名单
 		domainWhiteList.add("http://www.lesasa.com.cn");
+		//2019-12-10新增37神马白名单
+		domainWhiteList.add("http://37sm.lesasa.wang");
 	}
 }
