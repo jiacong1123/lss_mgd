@@ -41,15 +41,14 @@ public class SystemConstant {
 	public final static String qiniuSecretKey = "Z5Y0_x9BVolVv3l8a74B3KHaxetFdvGXEg_n1VTe";
 
 	/** 七牛域名 */
-	//public final static String qiniuBucketHostName="http://images.lesasa.com";
-	
+	// public final static String qiniuBucketHostName="http://images.lesasa.com";
+
 	/** 七牛域名 */
-	public final static String qiniuBucketHostName="http://images.lesasa.wang";
-	
+	public final static String qiniuBucketHostName = "http://images.lesasa.wang";
+
 	/** 七牛上傳文件空間名 */
-	public final static String qiniuBucket="images";
-	
-	
+	public final static String qiniuBucket = "images";
+
 	/**
 	 * 上传token
 	 */
@@ -89,7 +88,7 @@ public class SystemConstant {
 	 * 乐莎莎公众号Access_token
 	 */
 	public final static String lesasaAccess_token = "lesasa_Access_token";
-	
+
 	/**
 	 * 乐莎莎公众号appid
 	 */
@@ -99,22 +98,22 @@ public class SystemConstant {
 	 * 乐莎莎公众号secret
 	 */
 	public final static String lesasaSecret = "962d89dcda8fdcf5dc0ea414a2bd45de";
-	
+
 	/**
 	 * 乐莎莎公众号jsapi_ticket
 	 */
 	public final static String lesasajsapi_ticket = "lesasa_jsapi_ticket";
-	
+
 	/**
 	 * 工单7天未跟进则关闭
 	 */
 	public final static int WORK_ORDER_CLOSE_DAY = -7;
-	
+
 	/**
 	 * 工单5天前未跟进则提醒
 	 */
 	public final static int WORK_ORDER_WILL_CLOSE_DAY = -5;
-	
+
 	static {
 		// 初始化域名白名单
 		domainWhiteList.add("http://bms.lesasa.com");
@@ -126,16 +125,18 @@ public class SystemConstant {
 		domainWhiteList.add("http://www.leshasha.com");
 		domainWhiteList.add("http://m.leshasha.com");
 		domainWhiteList.add("http://m.lesasa.com");
-		domainWhiteList.add("http://rw.kehuzhitongche.com");//外网测试环境
-		domainWhiteList.add("http://121.201.66.202");//外网测试环境
-		//2019-9-20新增白名单
+		domainWhiteList.add("http://rw.kehuzhitongche.com");// 外网测试环境
+		domainWhiteList.add("http://121.201.66.202");// 外网测试环境
+		// 2019-9-20新增白名单
 		domainWhiteList.add("http://bms.lesasa.wang");
-		//2019-10-17新增pc官网白名单
+		// 2019-10-17新增pc官网白名单
 		domainWhiteList.add("http://pcapi.leshasha.com");
-		domainWhiteList.add("http://lesasa.com");
-		//2019-11-26新增pc官网白名单
-		domainWhiteList.add("http://www.lesasa.com.cn");
-		//2019-12-10新增37神马白名单
+		//domainWhiteList.add("http://lesasa.com");
+		// 2019-11-26新增pc官网白名单
+		domainWhiteList.add("http://lesasa.com.cn");
+		// 2019-12-10新增37神马白名单
 		domainWhiteList.add("http://37sm.lesasa.wang");
+		// 2019-12-12新增37神马白名单
+		domainWhiteList.add("http://37sm.gazyzl.com");
 	}
 }

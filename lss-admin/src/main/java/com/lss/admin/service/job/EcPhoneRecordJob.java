@@ -55,58 +55,68 @@ public class EcPhoneRecordJob {
 		logger.info("批次{}:开始处理EC通话记录。", ctime);
 		// 查询所有的userid
 		List<String> userList = ServiceManager.adminService.selectUserIds();
+		String userIds = String.join(";", userList);
 		String startDate = DateUtils.format(new Date(), DateUtils.YYYYMMDD);
-		for (String userIds : userList) {
-			JSONObject jsonParam = new JSONObject();
-			jsonParam.put("userIds", userIds);
-			jsonParam.put("startDate", startDate);
-			jsonParam.put("endDate", startDate);
-			String token = EcPhoneUtil.getToken(GET_EC_TOKEN_KEY);
-			JSONObject post = EcPhoneUtil.httpPost(EC_PHONE_RECORD_URL, jsonParam, token);
-			if (null != post && 200 == post.getIntValue("errCode")) {
-				List<EcPhoneRecodeResultVo> list = post.getObject("data", EcPhoneRecodeVo.class).getResult();
-				if (null != list && list.size() > 0) {
-					for (EcPhoneRecodeResultVo result : list) {
-						//从redis中查询通话唯一标识,如果不存在就插入通话记录,并把话单唯一标识存入缓存
-						String value = RedisUtil.getString(result.getMd5());
-						if(StringUtils.isEmpty(value)) {
-							CallRecord records = new CallRecord();
-							records.setRecordId(result.getMd5());// 通话唯一标识
-							records.setType(result.getType() + "");// 通话类型
-							records.setShowNo(result.getCalltono());// 被叫号码
-							records.setLlResult("ANSWERED");
-							records.setStartTime(result.getStarttime());// 通话开始时间
-							records.setEndTime(null);
-							records.setDuration(Integer.parseInt(result.getCalltime()));// 通话时长
-							records.setRecordingUrl(result.getPath());// 原始录音地址
-							
-							// 通过userID查询admin
-							Admin admin = MapperManager.adminMapper.selectAdminIdByUserId(result.getUserId());
-							if(null!=admin) {
-								records.setAdminId(admin.getAdminid());
-								records.setAdminName(admin.getName());
-							}
-							records.setEmpNo(admin.getPhone());
-							//通过手机号码查询工单系统客户
-							UserVo userVo = MapperManager.userMapper.queryByPhone(result.getCalltono());
-							if(null!=userVo) {
-								records.setUserName(userVo.getName());
-							}
-							records.setCusNo(result.getCalltono());
-							records.setCusInfo(result.getCustomerName());
-							records.setProcessStatus(ProcessStatus.INIT.name());
-							records.setCreateTime(new Date());
-							//新增通话记录
-							callRecordDao.insertSelective(records);
-							
-							
-							RedisUtil.setString(result.getMd5(), EC_PHONE_RECORD_URL, RedisUtil.EXRP_DAY);
-						}
+		String pageNo = RedisUtil.getString(startDate);
+		if(StringUtils.isEmpty(pageNo)||Integer.parseInt(pageNo)<1) {
+			pageNo = "1";
+		}
+		
+		JSONObject jsonParam = new JSONObject();
+		jsonParam.put("userIds", userIds);
+		jsonParam.put("startDate", startDate);
+		jsonParam.put("endDate", startDate);
+		jsonParam.put("pageNo", pageNo);
+		String token = EcPhoneUtil.getToken(GET_EC_TOKEN_KEY);
+		JSONObject post = EcPhoneUtil.httpPost(EC_PHONE_RECORD_URL, jsonParam, token);
+		if (null != post && 200 == post.getIntValue("errCode")) {
+			List<EcPhoneRecodeResultVo> list = post.getObject("data", EcPhoneRecodeVo.class).getResult();
+			if (null != list && list.size() > 0) {
+				for (EcPhoneRecodeResultVo result : list) {
+					//从redis中查询通话唯一标识,如果不存在就插入通话记录,并把话单唯一标识存入缓存
+					String value = RedisUtil.getString(result.getMd5());
+					if(StringUtils.isEmpty(value)) {
+						CallRecord records = new CallRecord();
+						records.setRecordId(result.getMd5());// 通话唯一标识
+						records.setType(result.getType() + "");// 通话类型
+						records.setShowNo(result.getCalltono());// 被叫号码
+						records.setLlResult("ANSWERED");
+						records.setStartTime(result.getStarttime());// 通话开始时间
+						records.setEndTime(null);
+						records.setDuration(Integer.parseInt(result.getCalltime()));// 通话时长
+						records.setRecordingUrl(result.getPath());// 原始录音地址
 						
+						// 通过userID查询admin
+						Admin admin = MapperManager.adminMapper.selectAdminIdByUserId(result.getUserId());
+						if(null!=admin) {
+							records.setAdminId(admin.getAdminid());
+							records.setAdminName(admin.getName());
+						}
+						records.setEmpNo(admin.getPhone());
+						//通过手机号码查询工单系统客户
+						UserVo userVo = MapperManager.userMapper.queryByPhone(result.getCalltono());
+						if(null!=userVo) {
+							records.setUserName(userVo.getName());
+						}
+						records.setCusNo(result.getCalltono());
+						records.setCusInfo(result.getCustomerName());
+						records.setProcessStatus(ProcessStatus.INIT.name());
+						records.setCreateTime(new Date());
+						//新增通话记录
+						callRecordDao.insertSelective(records);
+						
+						
+						RedisUtil.setString(result.getMd5(), EC_PHONE_RECORD_URL, RedisUtil.EXRP_DAY);
 					}
 				}
-
+				int page = Integer.parseInt(pageNo) + 1;
+				RedisUtil.setString(startDate, page+"", 86400);
 			}
+		}
+		//如果查询页码超过最大页码,则页码减1 {"errCode":20001,"errMsg":"请求页数超过最大页数"}
+		if(20001==post.getIntValue("errCode")) {
+			int page = Integer.parseInt(pageNo) - 1;
+			RedisUtil.setString(startDate, page+"", 86400);
 		}
 		logger.info("批次{}:开始处理通EC话记录完成。", ctime);
 	}
