@@ -174,4 +174,8 @@
   		]]>
   	</update>
   	
+  	<select id="selectByOrderNo" parameterType="java.lang.String" resultType="com.lss.core.pojo.WorkRecord">
+  		select * from ls_workrecord where orderno = #{orderNo} order by createtime DESC limit 1
+  	</select>
+  	
 </mapper>

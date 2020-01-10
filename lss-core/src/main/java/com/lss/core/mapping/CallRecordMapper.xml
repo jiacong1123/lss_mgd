@@ -32,12 +32,13 @@
     <result column="lss_record_url" jdbcType="VARCHAR" property="lssRecordUrl" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="call_type" jdbcType="VARCHAR" property="callType" />
   </resultMap>
   <sql id="Base_Column_List">
     id, record_id, type, transfer_no, show_no, ll_result, start_time, end_time, duration, 
     recording_url, call_info, emp_id, emp_no, emp_no_area, emp_info, cus_id, cus_no, 
     cus_no_area, cus_info, process_status, admin_id, admin_name, admin_phone, user_id, 
-    user_name, workrecord_id, orderno, lss_record_url, create_time, update_date
+    user_name, workrecord_id, orderno, lss_record_url, create_time, update_date,call_type
   </sql>
 
 	<resultMap id="FindResultMap"
@@ -74,6 +75,9 @@
       		</if>
       		<if test="userName!= null and userName!='' " >
         		and user_name like CONCAT('%',#{userName,jdbcType=VARCHAR},'%' )
+      		</if>
+      		<if test="callType != null and callType !='' " >
+        		and call_type = #{callType,jdbcType=VARCHAR}
       		</if>
 		</where>
 	</sql>
@@ -233,6 +237,9 @@
       <if test="updateDate != null">
         update_date,
       </if>
+      <if test="callType != null">
+        call_type,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -324,6 +331,9 @@
       </if>
       <if test="updateDate != null">
         #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callType != null">
+         #{callType,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

@@ -21,10 +21,8 @@
 	    <result column="micro_userid" jdbcType="VARCHAR" property="microUserId" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		adminid, clinicid, doctorid, loginame, loginpwd, name,
-		phone, status,
-		createtime,
-		logintime,caller_nos, transfer_no, org_id,org_name, no_wx
+		adminid, clinicid, doctorid, loginame, loginpwd, name,phone, status,createtime,
+		logintime,caller_nos, transfer_no, org_id,org_name, no_wx,ec_userid,micro_userid
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.Integer">
@@ -232,6 +230,9 @@
 		<if test="phone != null">
 			AND phone=#{phone}
 		</if>
+		<if test="orgName != null">
+			AND org_name like CONCAT('%',#{orgName},'%') 
+		</if>
 	</select>
 	<select id="adminList" resultType="com.lss.core.vo.admin.AdminListVo"
 		parameterType="com.lss.core.vo.admin.params.AdminParams">
@@ -247,6 +248,9 @@
 		</if>
 		<if test="phone != null">
 			AND a.phone=#{phone}
+		</if>
+		<if test="orgName != null">
+			AND org_name like CONCAT('%',#{orgName},'%') 
 		</if>
 		ORDER BY a.adminid DESC LIMIT #{index},#{limit}
 	</select>
@@ -367,15 +371,17 @@
 		where ec_userid is not null
 	</select>
 	
-	<select id="selectAdminIdByUserId" parameterType="java.lang.Integer" resultType="com.lss.core.pojo.Admin">
+	<select id="selectAdminIdByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
 		select <include refid="Base_Column_List"/>
 		from ls_admin 
 		where ec_userid = #{userId}
+		limit 1
 	</select>
 	
-	<select id="selectAdminIdByMicroUserId" parameterType="java.lang.String" resultType="com.lss.core.pojo.Admin">
+	<select id="selectAdminIdByMicroUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
 		select <include refid="Base_Column_List"/>
 		from ls_admin 
 		where micro_userid = #{microUserId}
+		limit 1
 	</select>
 </mapper>

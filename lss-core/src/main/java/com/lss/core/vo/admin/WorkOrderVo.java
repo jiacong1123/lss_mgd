@@ -64,8 +64,20 @@ public class WorkOrderVo {
     /** 分配日期 */
     private Date allottime;
     
+    private String city;
     
     
+    
+    
+    
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
 	public Date getAllottime() {
 		return allottime;
 	}

@@ -47,9 +47,19 @@ public class FindCallRecordPage extends PageParams {
     
     /** 通话记录id*/
     private String recordId;
+    /** 通话类型:EC/连连小号/超脑云固话*/
+    private String callType;
     
     
     
+	public String getCallType() {
+		return callType;
+	}
+
+	public void setCallType(String callType) {
+		this.callType = callType;
+	}
+
 	public String getRecordId() {
 		return recordId;
 	}

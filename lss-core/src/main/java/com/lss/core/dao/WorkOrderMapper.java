@@ -3,11 +3,18 @@ package com.lss.core.dao;
 import java.util.List;
 
 import com.lss.core.base.AbstractMapper;
+import com.lss.core.pojo.UserArriavl;
+import com.lss.core.pojo.UserCount;
+import com.lss.core.pojo.UserCountExeclVo;
+import com.lss.core.pojo.UserDetailExeclVo;
+import com.lss.core.pojo.UserSource;
 import com.lss.core.pojo.WorkOrder;
 import com.lss.core.pojo.WorkRecord;
 import com.lss.core.vo.admin.WorkOrderDetails;
 import com.lss.core.vo.admin.WorkOrderVo;
 import com.lss.core.vo.admin.params.ClueParams;
+import com.lss.core.vo.admin.params.UserArriavlParam;
+import com.lss.core.vo.admin.params.WorkOrderExcelParams;
 import com.lss.core.vo.admin.params.WorkOrderParams;
 import com.lss.core.vo.hx.ClueListVo;
 
@@ -235,5 +242,39 @@ public interface WorkOrderMapper extends AbstractMapper<WorkOrder, String> {
 	List<WorkOrder> offerFromMe(WorkOrderParams params);
 
 	void cancleOffer(WorkOrderParams params);
+
+	int userCount(WorkOrderParams params);
+
+	List<UserCount> userCountList(WorkOrderParams params);
+
+	List<UserCountExeclVo> exportUserCountList(WorkOrderExcelParams workOrderExcelParams);
+
+	List<UserDetailExeclVo> exportUserDetail(WorkOrderExcelParams workOrderExcelParams);
+
+	int levelCount(WorkOrderParams params);
+
+	List<UserCount> levelCountList(WorkOrderParams params);
+
+	int checkIsOffer(WorkOrderParams params);
+
+	int userSourceCount(WorkOrderParams params);
+
+	List<UserSource> userSourceList(WorkOrderParams params);
+
+	List<UserSource> userSourceTotal(WorkOrderParams params);
+
+	List<UserSource> exportUserSourceList(WorkOrderParams params);
+
+	int userArrivalCount(UserArriavlParam params);
+
+	List<UserArriavl> userArrivalList(UserArriavlParam params);
+
+	List<UserArriavl> exportUserArrival(UserArriavlParam params);
+
+	List<UserArriavl> userArrivalSex(UserArriavlParam params);
+
+	List<UserArriavl> userArrivalProject(UserArriavlParam params);
+
+	List<UserArriavl> userArrivalAge(UserArriavlParam params);
 
 }

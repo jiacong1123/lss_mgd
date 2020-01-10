@@ -28,4 +28,6 @@ public interface WorkRecordMapper extends AbstractMapper<WorkRecord, Integer> {
 	 * @author lhy 2019年8月12日 v1.4
 	 */
 	int autoCloseWorkOrderRecord(WorkOrderParams params);
+
+	WorkRecord selectByOrderNo(String orderNo);
 }

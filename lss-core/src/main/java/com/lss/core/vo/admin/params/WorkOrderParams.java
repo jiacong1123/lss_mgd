@@ -7,14 +7,18 @@ import com.lss.core.vo.PageParams;
 
 public class WorkOrderParams extends PageParams {
 	// 前端传入参数
-	private Integer status; //状态 0未分配 1待跟进 2已预约 3已到店 4已完成 5已关闭 10新分配 99全部 98待回收列表 8线上新导入97状态不等于8的全部状态
+	private Integer status; //状态 0未分配 1待跟进 2已预约 3已到店 4已成交 5已关闭 10新分配 99全部 98待回收列表 8线上新导入97状态不等于8的全部状态
 	private String name;
 	private String phone;
+	//意愿
 	private String level;
 	private Integer clinicid;
 	private Date start;
 	private Date end;
-	
+	//来源id
+	private String sourceid;
+	//来源id
+	private String sourceid2;
 	
 	// 权限参数
 	private Integer adminid;
@@ -25,10 +29,28 @@ public class WorkOrderParams extends PageParams {
 	private List<Integer> adminids;
 	/** 姓名或者电话查询 */
 	private String searchKey;
+	
 	/** 来源开始日期 */
 	private Date sourcedateStart;
 	/** 来源结束日期 */
 	private Date sourcedateEnd;
+	
+	/** 来源开始日期 */
+	private String sourcedateStartStr;
+	/** 来源结束日期 */
+	private String sourcedateEndStr;
+	
+	/** 分配时间-开始*/
+    private Date allottimeStart;
+    /** 分配时间-结束*/
+    private Date allottimeEnd;
+    
+    /** 分配时间-开始*/
+    private String allottimeStartStr;
+    /** 分配时间-结束*/
+    private String allottimeEndStr;
+    
+	
     /** 分配时间*/
     private Date allottime;
     
@@ -37,19 +59,13 @@ public class WorkOrderParams extends PageParams {
     /** 即将关闭的的时间 */
     private Date endCloseTime;
     
-	/** 来源开始日期 */
-	private String sourcedateStartStr;
-	/** 来源结束日期 */
-	private String sourcedateEndStr;
+	
 	/** 跟进时间开始日期 */
 	private Date followupTimeStart;
 	/** 跟进时间结束日期 */
 	private Date followupTimeEnd;
 	
-	/** 分配时间-开始*/
-    private Date allottimeStart;
-    /** 分配时间-结束*/
-    private Date allottimeEnd;
+	
     
     /** 计划回访时间-开始*/
     private Date returndateStart;
@@ -75,8 +91,64 @@ public class WorkOrderParams extends PageParams {
     private String toMe;
     private String orderNo;
     private String adminNames;
+    //是否查询全量数据
+    private String isAll;
+    //意愿等级多选
+    private List<String> levelList;
 	
 	
+
+	
+
+	
+
+	public List<String> getLevelList() {
+		return levelList;
+	}
+
+	public void setLevelList(List<String> levelList) {
+		this.levelList = levelList;
+	}
+
+	public String getAllottimeStartStr() {
+		return allottimeStartStr;
+	}
+
+	public void setAllottimeStartStr(String allottimeStartStr) {
+		this.allottimeStartStr = allottimeStartStr;
+	}
+
+	public String getAllottimeEndStr() {
+		return allottimeEndStr;
+	}
+
+	public void setAllottimeEndStr(String allottimeEndStr) {
+		this.allottimeEndStr = allottimeEndStr;
+	}
+
+	public String getIsAll() {
+		return isAll;
+	}
+
+	public void setIsAll(String isAll) {
+		this.isAll = isAll;
+	}
+
+	public String getSourceid2() {
+		return sourceid2;
+	}
+
+	public void setSourceid2(String sourceid2) {
+		this.sourceid2 = sourceid2;
+	}
+
+	public String getSourceid() {
+		return sourceid;
+	}
+
+	public void setSourceid(String sourceid) {
+		this.sourceid = sourceid;
+	}
 
 	public String getAdminNames() {
 		return adminNames;

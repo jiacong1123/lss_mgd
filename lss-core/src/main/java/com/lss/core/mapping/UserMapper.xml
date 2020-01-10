@@ -251,6 +251,9 @@
       <if test="lableremarks != null">
         lableremarks = #{lableremarks,jdbcType=VARCHAR},
       </if>
+      <if test="callTime != null">
+        call_time = #{callTime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where userid = #{userid,jdbcType=INTEGER}
   </update>
@@ -279,7 +282,8 @@
     where userid = #{userid,jdbcType=INTEGER}
   </update>
 	<select id="checkPhone" resultType="java.lang.Integer">
-		SELECT COUNT(1) FROM ls_user
+		SELECT COUNT(1) 
+		FROM ls_user
 		WHERE phone=#{phone}
 	</select>
 	<select id="userCount" resultType="java.lang.Integer"
@@ -293,7 +297,7 @@
 			SELECT max(orderno) FROM ls_workorder t  GROUP BY t.userid 
 			)
 		)wo on a.userid=wo.userid 
-		 WHERE a.`status` &gt;= 0
+		 WHERE a.`status` = 1
 		 <if test="orderstatus != null ">
 		 		and  
 			<choose>
@@ -324,7 +328,10 @@
 			AND a.city=#{city}
 		</if>
 		<if test="sourceid != null">
-			AND (a.sourceid=#{sourceid} or a.sourceid2=#{sourceid} )
+			AND (a.sourceid=#{sourceid})
+		</if>
+		<if test="sourceid2 != null">
+			AND (a.sourceid2=#{sourceid2})
 		</if>
 		<if test="start != null">
 			AND a.createtime &gt;= #{start}
@@ -333,15 +340,30 @@
 			AND a.createtime &lt; #{end}
 		</if>
 	</select>
+	
+	<select id="queryByPhone" resultType="com.lss.core.vo.admin.UserVo">
+		SELECT
+		userid,phone,`name`,sex,age,province,city,sourceid,sourceid2,sourcedate ,no_wx_alias as noWxAlias FROM
+		ls_user WHERE phone=#{phone}
+	</select>
+	<select id="queryUser" resultType="com.lss.core.vo.admin.UserVo">
+		SELECT
+		a.userid,a.phone,a.`name`,a.sex,a.age,a.province,a.city,a.sourceid,a.sourcedate,a.notes,b.tagname
+		sourcename,a.no_wx_alias as noWxAlias ,a.sourceid2,a.sourcename2,a.lablenames, 
+    	a.lableremarks FROM ls_user a
+		LEFT JOIN ls_worktag b ON a.sourceid=b.tagid
+		WHERE a.userid=#{userid}
+	</select>
+	
 	<select id="userList" resultType="com.lss.core.vo.admin.UserVo"
 		parameterType="com.lss.core.vo.admin.params.UserParams">
 		SELECT
-		a.userid,a.phone,a.`name`,a.sex,a.age,a.wechat,a.province,a.city,a.sourceid,a.sourcedate,a.createtime,a.notes,b.tagname
-		sourcename
-		,wo.`status` as orderstatus,wo.orderno,wo.adminid ,wo.`name` as adminname,wo.isclue,wo.followup
-		,a.sourceid2,a.sourcename2
-		 FROM ls_user a
-		LEFT JOIN ls_worktag b ON a.sourceid=b.tagid
+		a.userid,a.phone,a.`name`,a.sex,a.age,a.wechat,a.province,a.city,a.sourceid,a.sourcedate,a.createtime,a.notes,
+		b.tagname sourcename,b2.tagname sourcename2,wo.`status` as orderstatus,wo.orderno,wo.adminid ,
+		wo.`name` as adminname,wo.isclue,wo.followup,a.sourceid2,a.sourcename2
+		FROM ls_user a
+		LEFT JOIN ls_worktag b ON a.sourceid = b.tagid
+		LEFT JOIN ls_worktag b2 ON a.sourceid2 = b2.tagid
 		LEFT JOIN(
 			SELECT w.`status`,w.orderno,w.adminid ,u.`name`,w.isclue,w.followup,w.userid from ls_workorder w 
 			left JOIN ls_admin  u on w.adminid=u.adminid
@@ -350,7 +372,7 @@
 			SELECT max(orderno) FROM ls_workorder t  GROUP BY t.userid 
 			)
 		)wo on a.userid=wo.userid 
-		WHERE a.`status` &gt;= 0
+		WHERE a.`status` = 1
 		<if test="orderstatus != null ">
 			and 
 			<choose>
@@ -381,7 +403,10 @@
 			AND a.city=#{city}
 		</if>
 		<if test="sourceid != null">
-			AND (a.sourceid=#{sourceid} or a.sourceid2=#{sourceid} )
+			AND (a.sourceid=#{sourceid})
+		</if>
+		<if test="sourceid2 != null">
+			AND (a.sourceid2=#{sourceid2})
 		</if>
 		<if test="start != null">
 			AND a.createtime &gt;= #{start}
@@ -391,48 +416,77 @@
 		</if>
 		ORDER BY a.userid DESC LIMIT #{index},#{limit}
 	</select>
-	<select id="queryByPhone" resultType="com.lss.core.vo.admin.UserVo">
-		SELECT
-		userid,phone,`name`,sex,age,province,city,sourceid,sourcedate ,no_wx_alias as noWxAlias FROM
-		ls_user WHERE phone=#{phone}
-	</select>
-	<select id="queryUser" resultType="com.lss.core.vo.admin.UserVo">
-		SELECT
-		a.userid,a.phone,a.`name`,a.sex,a.age,a.province,a.city,a.sourceid,a.sourcedate,a.notes,b.tagname
-		sourcename,a.no_wx_alias as noWxAlias ,a.sourceid2,a.sourcename2,a.lablenames, 
-    	a.lableremarks FROM ls_user a
-		LEFT JOIN ls_worktag b ON a.sourceid=b.tagid
-		WHERE a.userid=#{userid}
-	</select>
+	
 	<select id="exportExcel" resultType="com.lss.core.vo.admin.UserExeclVo"
 		parameterType="com.lss.core.vo.admin.params.UserExeclParams">
-		SELECT b.phone,b.`name`,b.age,date_format(b.createtime,'%Y-%m-%d
-		%H:%I:%S') strtime,d.tagname source,b.sourcename2,a.level,c.`name` admin,b.notes url,a.worknotes notes FROM
-		ls_workorder a
-		LEFT JOIN ls_user b ON a.userid=b.userid
-		LEFT JOIN ls_admin c ON a.adminid=c.adminid
-		LEFT JOIN ls_worktag d ON b.sourceid=d.tagid
-		WHERE b.`status` &gt;= 0
+		SELECT
+			a.phone,
+			a.`name`,
+			a.age,
+			date_format( a.createtime, '%Y-%m-%d% %H:%I:%S' ) strtime,
+			b.tagname source,
+			a.sourcename2,
+			wo.`level`,
+			wo.`name` admin,
+			a.notes url,
+			wo.worknotes notes 
+		FROM
+			ls_user a
+			LEFT JOIN ls_worktag b ON a.sourceid = b.tagid
+			LEFT JOIN ls_worktag b2 ON a.sourceid2 = b2.tagid
+			LEFT JOIN (
+		SELECT
+			w.`status`,
+			w.`level`,
+			w.orderno,
+			w.adminid,
+			u.`name`,
+			w.isclue,
+			w.followup,
+			w.worknotes,
+			w.userid 
+		FROM
+			ls_workorder w
+			LEFT JOIN ls_admin u ON w.adminid = u.adminid 
+			) wo ON a.userid = wo.userid 
+		WHERE a.`status` = 1
+		<if test="orderstatus != null ">
+			and 
+			<choose>
+				<when test="orderstatus == 1">
+					wo.`status`=1 AND wo.followup &gt; 0
+				</when>
+				<when test="orderstatus == 10">
+					wo.`status`=1 AND wo.followup=0
+				</when>
+				<otherwise>
+					wo.`status`=#{orderstatus}
+				</otherwise>
+			</choose>
+		</if>
 		<if test="name != null">
-			AND b.`name`=#{name}
+			AND a.`name`=#{name}
 		</if>
 		<if test="phone != null">
-			AND b.phone=#{phone}
+			AND a.phone=#{phone}
 		</if>
 		<if test="province != null">
-			AND b.province=#{province}
+			AND a.province=#{province}
 		</if>
 		<if test="city != null">
-			AND b.city=#{city}
+			AND a.city=#{city}
 		</if>
 		<if test="sourceid != null">
-			AND b.sourceid=#{sourceid}
+			AND (a.sourceid=#{sourceid})
+		</if>
+		<if test="sourceid2 != null">
+			AND (a.sourceid2=#{sourceid2})
 		</if>
 		<if test="start != null">
-			AND b.createtime &gt;= #{start}
+			AND a.createtime &gt;= #{start}
 		</if>
 		<if test="end != null">
-			AND b.createtime &lt; #{end}
+			AND a.createtime &lt; #{end}
 		</if>
 		ORDER BY a.userid DESC
 	</select>

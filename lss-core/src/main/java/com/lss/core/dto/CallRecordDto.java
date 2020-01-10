@@ -97,10 +97,19 @@ public class CallRecordDto implements Serializable {
     //2019-9-19日新增
     private String name;
     private String phone;
-    
+    /** 通话类型:EC/连连小号/超脑云固话*/
+    private String callType;
 
     
-    public String getName() {
+    public String getCallType() {
+		return callType;
+	}
+
+	public void setCallType(String callType) {
+		this.callType = callType;
+	}
+
+	public String getName() {
 		return name;
 	}
 

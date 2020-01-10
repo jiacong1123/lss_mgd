@@ -10,6 +10,7 @@ public class UserParams extends PageParams {
 	private String province;
 	private String city;
 	private Integer sourceid;
+	private Integer sourceid2;
 	private Date start;
 	private Date end;
 	
@@ -17,6 +18,15 @@ public class UserParams extends PageParams {
 	private Integer orderstatus;
 	/** 所属销售 */
 	private Integer adminid;
+
+	
+	public Integer getSourceid2() {
+		return sourceid2;
+	}
+
+	public void setSourceid2(Integer sourceid2) {
+		this.sourceid2 = sourceid2;
+	}
 
 	public String getName() {
 		return name;

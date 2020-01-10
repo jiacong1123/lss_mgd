@@ -92,8 +92,20 @@ public class CallRecord {
 
     /** 修改时间*/
     private Date updateDate;
+    
+    /** 通话类型:EC/连连小号/超脑云固话*/
+    private String callType;
 
-    public Integer getId() {
+
+    public String getCallType() {
+		return callType;
+	}
+
+	public void setCallType(String callType) {
+		this.callType = callType;
+	}
+
+	public Integer getId() {
         return id;
     }
 

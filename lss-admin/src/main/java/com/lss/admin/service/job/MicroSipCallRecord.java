@@ -21,6 +21,8 @@ import com.lss.core.dao.ICallRecordDao;
 import com.lss.core.emus.ProcessStatus;
 import com.lss.core.pojo.Admin;
 import com.lss.core.pojo.CallRecord;
+import com.lss.core.pojo.User;
+import com.lss.core.pojo.WorkRecord;
 import com.lss.core.util.MicroSipUtil;
 import com.lss.core.util.QiniuUtil;
 import com.lss.core.util.RedisUtil;
@@ -71,18 +73,21 @@ public class MicroSipCallRecord {
 						String value = RedisUtil.getString(id + "");
 						if (StringUtils.isEmpty(value)) {
 							CallRecord records = new CallRecord();
+							records.setCallType("超脑云固话");
 							records.setRecordId(id + "");// 通话唯一标识
 							records.setType(bill.getString("direction"));
 							if(destnumber.startsWith("0")) {
-								records.setShowNo(destnumber.substring(1));// 被叫号码
-								records.setCusNo(destnumber.substring(1));// 被叫号码
-							}else {
-								records.setShowNo(destnumber);// 被叫号码
-								records.setCusNo(destnumber);// 被叫号码
+								destnumber = destnumber.substring(1);
 							}
-							records.setLlResult("ANSWERED");
+							records.setShowNo(destnumber);// 被叫号码
+							records.setCusNo(destnumber);// 被叫号码
 							records.setStartTime(bill.getString("starttime"));// 通话开始时间
 							records.setEndTime(bill.getString("endtime"));
+							if((int) bill.get("billsec")>0) {
+								records.setLlResult("已接通");
+							}else {
+								records.setLlResult("未接通");
+							}
 							records.setDuration((int) bill.get("billsec"));// 通话时长
 
 							// 获取录音地址
@@ -112,12 +117,28 @@ public class MicroSipCallRecord {
 							if (null != admin) {
 								records.setAdminId(admin.getAdminid());
 								records.setAdminName(admin.getName());
-								records.setEmpNo(admin.getPhone());
+								records.setEmpNo(admin.getMicroUserId());
 							}
 							// 通过手机号码查询工单系统客户
-							UserVo userVo = MapperManager.userMapper.queryByPhone(destnumber.substring(1));
+							UserVo userVo = MapperManager.userMapper.queryByPhone(destnumber);
 							if (null != userVo) {
+								records.setUserId(userVo.getUserid());
 								records.setUserName(userVo.getName());
+								//更新联系时间
+								if("已接通".equals(records.getLlResult())) {
+									User user = new User();
+									user.setUserid(userVo.getUserid());
+									user.setCallTime(new Date());
+									MapperManager.userMapper.updateByPrimaryKeySelective(user);
+									//更新工单流程通话录音，通话结果
+									String orderNo = MapperManager.workOrderMapper.findOrderNoByUserId(user.getUserid());
+									WorkRecord record = MapperManager.workRecordMapper.selectByOrderNo(orderNo);
+									if(null != record) {
+										record.setRecordUrl(records.getRecordingUrl());
+										record.setRemark("已接通");
+										MapperManager.workRecordMapper.updateByPrimaryKeySelective(record);
+									}
+								}
 							}
 							records.setProcessStatus(ProcessStatus.PROCESSED.name());
 							records.setCreateTime(new Date());

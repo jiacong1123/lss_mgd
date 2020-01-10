@@ -48,7 +48,20 @@ public class User {
     /** 标签备注，json存贮用于前后端解析*/
     private String lableremarks;
     
-    public Integer getUserid() {
+    /** 联系客户时间*/
+    private Date callTime;
+    
+    
+    
+    public Date getCallTime() {
+		return callTime;
+	}
+
+	public void setCallTime(Date callTime) {
+		this.callTime = callTime;
+	}
+
+	public Integer getUserid() {
         return userid;
     }
 

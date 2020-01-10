@@ -111,8 +111,6 @@ public class UserServiceImpl implements UserService {
 			return "请选择客户来源";
 		if (ObjectUtil.isEmpty(user.getSourcedate()))
 			return "请填写来源日期";
-		if (ObjectUtil.isNotEmpty(user.getSourceid2())&&ObjectUtil.isEmpty(user.getSourcename2()))
-			return "客户二级来源名称不能为空";//二级来源ID非空，则名称必须非空
 		return "";
 	}
 
@@ -230,13 +228,15 @@ public class UserServiceImpl implements UserService {
 		// 验证手机号 
 		if (MapperManager.userMapper.checkPhone(phone) > 0) {
 			if (temp.size() >= 8) {//看有没有用分配人员
-				String customerService = temp.get(7).trim();// 跟进客服
+				String customerService = temp.get(8).trim();// 跟进客服
 				if (!"".equals(customerService)) {
 					Admin admin = MapperManager.adminMapper
 							.queryByName(customerService);
 					if (admin != null) {//分配人员非空，则检测客户否有未分配工单
 						//检测 该手机号客户是否已分配，未分配则进行分配，已分配则提示 重复
 						UserVo findUser = MapperManager.userMapper.queryByPhone(phone);
+						//如果有二级来源则更新二级来源
+						checkSource2(temp, sourcelist, user, findUser);
 						// 用户信息存在。。查询是否有待分配的工单
 						WorkOrder findOrder = MapperManager.workOrderMapper.queryWorkOrder(findUser.getUserid());
 						if (findOrder == null) { 
@@ -251,9 +251,9 @@ public class UserServiceImpl implements UserService {
 							updateOrder.setOrderno(findOrder.getOrderno());
 							updateOrder.setStatus(1);
 							if (temp.size() >= 9) {
-								updateOrder.setWorknotes(temp.get(8).trim());
+								updateOrder.setWorknotes(temp.get(9).trim());
 							}
-							String project = temp.get(6).trim();// 预约项目
+							String project = temp.get(7).trim();// 预约项目
 							if (!"".equals(project)) {
 								for (WorkTag tag : projectlist) {
 									if (tag.getTagname().equals(project)) {
@@ -298,25 +298,53 @@ public class UserServiceImpl implements UserService {
 				} catch (Exception e) {
 				}
 			}
-			String source = temp.get(4).trim();// 来源
+			String source = temp.get(4).trim();// 一级来源
+			String source2 = temp.get(5).trim();// 二级来源
+			//如果一级来源为空,或者来源不存在,全部划分到未知
 			if (!"".equals(source)) {
+				int fail = 0;
 				for (WorkTag tag : sourcelist) {
 					if (tag.getTagname().equals(source)) {
 						user.setSourceid(tag.getTagid());
+						fail +=1;
 						break;
 					}
 				}
+				if(fail<1) {
+					user.setSourceid(183);
+				}
+			}else {
+				user.setSourceid(183);
 			}
+			//如果二级来源为空,或者来源不存在,全部划分到未知
+			if (!"".equals(source2)) {
+				int fail = 0;
+				for (WorkTag tag : sourcelist) {
+					if (tag.getTagname().equals(source2)) {
+						user.setSourceid2(tag.getTagid());
+						fail +=1;
+						break;
+					}
+				}
+				if(fail<1) {
+					user.setSourceid2(183);
+				}
+			}else {
+				user.setSourceid2(183);
+			}
+			
 			// 来源日期格式
-			String sourceDate = temp.get(5).trim();// 来源日期
+			String sourceDate = temp.get(6).trim();// 来源日期
 			if (ObjectUtil.isNotEmpty(sourceDate)) {
 				log.error("来源日期{}" ,sourceDate);
 				user.setSourcedate(DateUtils.parseDate(sourceDate));
-	//			user.setSourcedate(new Date(sourceDate));
 			}
 			user.setPassword(MD5.encrypt("123456"));
 			if (temp.size() >= 9) {
-				user.setNotes(temp.get(8).trim());// 备注
+				user.setNotes(temp.get(9).trim());// 备注
+			}
+			if (temp.size() >= 10) {
+				user.setCity(temp.get(10).trim());// 城市
 			}
 			user.setCreatetime(dt);
 			MapperManager.userMapper.insertSelective(user);
@@ -327,7 +355,7 @@ public class UserServiceImpl implements UserService {
 			order.setUserid(user.getUserid());
 			order.setCreatetime(dt);
 			order.setWorknotes(user.getNotes());
-			String project = temp.get(6).trim();// 预约项目
+			String project = temp.get(7).trim();// 预约项目
 			if (!"".equals(project)) {
 				for (WorkTag tag : projectlist) {
 					if (tag.getTagname().equals(project)) {
@@ -337,7 +365,7 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 			if (temp.size() >= 8) {
-				String customerService = temp.get(7).trim();// 跟进客服
+				String customerService = temp.get(8).trim();// 跟进客服
 				if (!"".equals(customerService)) {
 					Admin admin = MapperManager.adminMapper
 							.queryByName(customerService);
@@ -359,6 +387,29 @@ public class UserServiceImpl implements UserService {
 			return 1;
 		}
 		
+	}
+
+	private void checkSource2(List<String> temp, List<WorkTag> sourcelist, User user, UserVo findUser) {
+		String source2 = temp.get(5).trim();// 二级来源
+		if(183 == findUser.getSourceid2()) {
+			if (!"".equals(source2)) {
+				int fail = 0;
+				for (WorkTag tag : sourcelist) {
+					if (tag.getTagname().equals(source2)) {
+						user.setSourceid2(tag.getTagid());
+						fail +=1;
+						break;
+					}
+				}
+				if(fail<1) {
+					user.setSourceid2(183);
+				}
+			}else {
+				user.setSourceid2(183);
+			}
+			user.setUserid(findUser.getUserid());
+			MapperManager.userMapper.updateByPrimaryKeySelective(user);
+		}
 	}
 
 	@Override

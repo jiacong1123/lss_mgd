@@ -430,7 +430,7 @@ public class POIExcelUtil {
 				Cell cell = row.getCell(new Integer(colIx));
 				if (cell != null) {
 					// 自定义时间类型
-					if (colIx != 5) {
+					if (colIx != 6) {
 						cell.setCellType(Cell.CELL_TYPE_STRING);
 					}
 					cellValue = POIExcelUtil.getValue(cell);

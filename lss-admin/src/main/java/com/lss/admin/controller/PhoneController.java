@@ -89,7 +89,7 @@ public class PhoneController extends BaseController {
 	@RequestMapping("/callRecord/list")
 	public ReturnVo callRecordList(@RequestBody FindCallRecordPage param) {
 		ReturnVo vo = null;
-		param.setProcessStatus(ProcessStatus.PROCESSED.name());
+		//param.setProcessStatus(ProcessStatus.PROCESSED.name());
 		vo = callRecordService.findCallRecordPage(param);
 		return vo;
 	}

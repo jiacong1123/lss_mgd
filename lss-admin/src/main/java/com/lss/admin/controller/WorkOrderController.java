@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,12 +22,21 @@ import com.lss.core.dto.FindOrderPayPage;
 import com.lss.core.dto.OrderPayDto;
 import com.lss.core.exception.LssException;
 import com.lss.core.pojo.User;
+import com.lss.core.pojo.UserArriavl;
+import com.lss.core.pojo.UserCountExeclVo;
+import com.lss.core.pojo.UserDetailExeclVo;
+import com.lss.core.pojo.UserSource;
+import com.lss.core.pojo.UserSourceExeclVo;
 import com.lss.core.pojo.WorkOrder;
 import com.lss.core.pojo.WorkRecord;
+import com.lss.core.util.ExportExcel;
 import com.lss.core.util.ObjectUtil;
 import com.lss.core.vo.ReturnVo;
 import com.lss.core.vo.admin.WorkRecordVo;
+import com.lss.core.vo.admin.params.UserArriavlExcelParam;
+import com.lss.core.vo.admin.params.UserArriavlParam;
 import com.lss.core.vo.admin.params.UserOrderParams;
+import com.lss.core.vo.admin.params.WorkOrderExcelParams;
 import com.lss.core.vo.admin.params.WorkOrderParams;
 
 /**
@@ -221,17 +231,24 @@ public class WorkOrderController extends BaseController {
 	 */
 	@RequestMapping("close")
 	public ReturnVo close(@RequestBody WorkOrder order) {
+		ReturnVo result = new ReturnVo();
+		result.setResult(ResponseCode.parameterError);
+		result.setMsg(ResponseCode.parameterErrorMsg);
 		//更新状态为已回访
-		WorkOrderParams params = new WorkOrderParams();
-		params .setIsReturn("2");
-		List<String> ordernos = new ArrayList<String>();
-		String[] ordernoArr = order.getOrderno().split(",");
-		Collections.addAll(ordernos, ordernoArr);
-		params.setOrdernos(ordernos);
-		ServiceManager.workOrderService.updateIsReturn(params);
-		//关闭工单时取消工单共享状态
-		ServiceManager.workOrderService.cancleOffer(params,loginAdmin);
-		return ServiceManager.workOrderService.close(order, loginAdmin);
+		if(null != order) {
+			WorkOrderParams params = new WorkOrderParams();
+			params.setIsReturn("2");
+			List<String> ordernos = new ArrayList<String>();
+			String[] ordernoArr = order.getOrderno().split(",");
+			Collections.addAll(ordernos, ordernoArr);
+			params.setOrdernos(ordernos);
+			ServiceManager.workOrderService.updateIsReturn(params);
+			//关闭工单时取消工单共享状态
+			ServiceManager.workOrderService.cancleOffer(params,loginAdmin);
+			return ServiceManager.workOrderService.close(order, loginAdmin);
+		}else {
+			return result;
+		}
 	}
 
 	/**
@@ -467,5 +484,177 @@ public class WorkOrderController extends BaseController {
 		return ServiceManager.workOrderService.cancleOffer(params,loginAdmin);
 	}
 	
+	/**
+	 * 用户统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/userCount")
+	public ReturnVo userCount(@RequestBody WorkOrderParams params) {
+		return ServiceManager.workOrderService.userCount(params);
+	}
+	
+	/**
+	 * 用户意愿统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/levelCount")
+	public ReturnVo levelCount(@RequestBody WorkOrderParams params) {
+		return ServiceManager.workOrderService.levelCount(params);
+	}
+	
+	
+	/**
+	 * 导出用户统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/exportUserCount")
+	public void exportUserCount(WorkOrderExcelParams workOrderExcelParams) {
+		if(StringUtils.isNotEmpty(workOrderExcelParams.getAllottimeStart())) {
+			workOrderExcelParams.setAllottimeStart(workOrderExcelParams.getAllottimeStart() + " 00:00:00");
+		}
+		if(StringUtils.isNotEmpty(workOrderExcelParams.getAllottimeEnd())) {
+			workOrderExcelParams.setAllottimeEnd(workOrderExcelParams.getAllottimeEnd() + " 23:59:59");
+		}
+		ReturnVo returnVo = ServiceManager.workOrderService.exportUserCount(workOrderExcelParams);
+		
+		List<UserCountExeclVo> list = (List<UserCountExeclVo>) returnVo.getObj();
+		ExportExcel<UserCountExeclVo> ee = new ExportExcel<UserCountExeclVo>();
+		String[] headers = {"一级来源","二级来源", "来源日期", "分配日期", "意愿", "数量", "占比"};
+		String fileName = "客户表单有效性统计";
+		ee.exportExcel(headers, list, fileName, response);
+	}
+	
+	/**
+	 * 导出用户统计明细
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/exportUserDetail")
+	public void exportUserDetail(WorkOrderExcelParams workOrderExcelParams) {
+		if(StringUtils.isNotEmpty(workOrderExcelParams.getAllottimeStart())) {
+			workOrderExcelParams.setAllottimeStart(workOrderExcelParams.getAllottimeStart() + " 00:00:00");
+		}
+		if(StringUtils.isNotEmpty(workOrderExcelParams.getAllottimeEnd())) {
+			workOrderExcelParams.setAllottimeEnd(workOrderExcelParams.getAllottimeEnd() + " 23:59:59");
+		}
+		ReturnVo returnVo = ServiceManager.workOrderService.exportUserDetail(workOrderExcelParams);
+		
+		List<UserDetailExeclVo> list = (List<UserDetailExeclVo>) returnVo.getObj();
+		ExportExcel<UserDetailExeclVo> ee = new ExportExcel<UserDetailExeclVo>();
+		String[] headers = {"姓名","手机号","一级来源","二级来源", "来源日期", "分配日期", "意愿", "所属人员"};
+		String fileName = "客户表单有效性明细";
+		ee.exportExcel(headers, list, fileName, response);
+	}
+	
+	/**
+	 * 客户来源统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/userSource")
+	public ReturnVo userSource(@RequestBody WorkOrderParams params) {
+		ReturnVo returnVo = ServiceManager.workOrderService.userSource(params);
+		return returnVo;
+	}
+	
+	/**
+	 * 客户来源总计统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/userSourceTotal")
+	public ReturnVo userSourceTotal(@RequestBody WorkOrderParams params) {
+		ReturnVo returnVo = ServiceManager.workOrderService.userSourceTotal(params);
+		return returnVo;
+	}
+	
+	/**
+	 * 导出用户统计明细
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/exportUserSource")
+	public void exportUserSource(WorkOrderExcelParams workOrderExcelParams) {
+		if(StringUtils.isNotEmpty(workOrderExcelParams.getSourcedateStart())) {
+			workOrderExcelParams.setSourcedateStart(workOrderExcelParams.getSourcedateStart() + " 00:00:00");
+		}
+		if(StringUtils.isNotEmpty(workOrderExcelParams.getSourcedateEnd())) {
+			workOrderExcelParams.setSourcedateEnd(workOrderExcelParams.getSourcedateEnd() + " 23:59:59");
+		}
+		ReturnVo returnVo = ServiceManager.workOrderService.exportUserSource(workOrderExcelParams);
+		
+		List<UserSource> list = (List<UserSource>) returnVo.getObj();
+		ExportExcel<UserSource> ee = new ExportExcel<UserSource>();
+		String[] headers = {"一级来源","二级来源", "客户总数", "接通数", "接通率", "预约数","预约率","接通预约率","到店数","到店率","接通到店率",
+				"成交","成交率","接通成交率"};
+		String fileName = "客户来源统计";
+		ee.exportExcel(headers, list, fileName, response);
+	}
+	
+	
+	/**
+	 * 到店客户统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/userArrival")
+	public ReturnVo userArrival(@RequestBody UserArriavlParam params) {
+		ReturnVo returnVo = ServiceManager.workOrderService.userArrival(params);
+		return returnVo;
+	}
+	
+	/**
+	 * 导出到店用户明细
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/exportUserArrival")
+	public void exportUserArrival(UserArriavlExcelParam userArriavlExcelParam) {
+		
+		ReturnVo returnVo = ServiceManager.workOrderService.exportUserArrival(userArriavlExcelParam);
+		
+		List<UserArriavl> list = (List<UserArriavl>) returnVo.getObj();
+		ExportExcel<UserArriavl> ee = new ExportExcel<UserArriavl>();
+		String[] headers = {"姓名","手机号", "性别", "年龄", "地区", "一级来源","二级来源","意向项目","成交项目","来源日期","到店日期",
+				"成交日期"};
+		String fileName = "到店客户统计";
+		ee.exportExcel(headers, list, fileName, response);
+	}
+	
+	/**
+	 * 客户到店性别统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/userArrivalSex")
+	public ReturnVo userArrivalSex(@RequestBody UserArriavlParam params) {
+		ReturnVo returnVo = ServiceManager.workOrderService.userArrivalSex(params);
+		return returnVo;
+	}
+	
+	/**
+	 * 客户到店意向统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/userArrivalProject")
+	public ReturnVo userArrivalProject(@RequestBody UserArriavlParam params) {
+		ReturnVo returnVo = ServiceManager.workOrderService.userArrivalProject(params);
+		return returnVo;
+	}
+	
+	/**
+	 * 客户到店年龄统计
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/userArrivalAge")
+	public ReturnVo userArrivalAge(@RequestBody UserArriavlParam params) {
+		ReturnVo returnVo = ServiceManager.workOrderService.userArrivalAge(params);
+		return returnVo;
+	}
 	
 }

@@ -1,5 +1,7 @@
 package com.lss.admin.service.impl;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +38,11 @@ import com.lss.core.exception.LssException;
 import com.lss.core.pojo.Admin;
 import com.lss.core.pojo.Clinic;
 import com.lss.core.pojo.User;
+import com.lss.core.pojo.UserArriavl;
+import com.lss.core.pojo.UserCount;
+import com.lss.core.pojo.UserCountExeclVo;
+import com.lss.core.pojo.UserDetailExeclVo;
+import com.lss.core.pojo.UserSource;
 import com.lss.core.pojo.WorkOrder;
 import com.lss.core.pojo.WorkRecord;
 import com.lss.core.pojo.WorkTag;
@@ -50,7 +57,10 @@ import com.lss.core.vo.admin.UserVo;
 import com.lss.core.vo.admin.WorkOrderDetails;
 import com.lss.core.vo.admin.WorkOrderVo;
 import com.lss.core.vo.admin.WorkRecordVo;
+import com.lss.core.vo.admin.params.UserArriavlExcelParam;
+import com.lss.core.vo.admin.params.UserArriavlParam;
 import com.lss.core.vo.admin.params.UserOrderParams;
+import com.lss.core.vo.admin.params.WorkOrderExcelParams;
 import com.lss.core.vo.admin.params.WorkOrderParams;
 import com.lss.core.vo.ztc.ZtcPersonMember;
 
@@ -98,7 +108,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			result.setMsg("还未分配角色");
 			return result;
 		}
-		if (params.getStatus() == 98) {// 待调库（回收）列表
+		// 待调库（回收）列表
+		if (params.getStatus() == 98) {
 			if (params.getStartCloseTime() != null) {
 				params.setStartCloseTime(
 						DateUtils.addDate(params.getStartCloseTime(), SystemConstant.WORK_ORDER_WILL_CLOSE_DAY));
@@ -115,17 +126,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// 其他状态要加相应的查询条件
 //		if (params.getStatus() != 0 && params.getStatus() != 5) {//关闭的也只看本人的 2019.08.12 v1.4
 		if (params.getStatus() != 0) {
+			//1.角色为电销员
 			if (admin.getRoles().contains(3) && !admin.getRoles().contains(9)) {
-				if (null == params.getAdminid()) {
-					params.setAdminid(admin.getAdminid());
-				}
-
-				// 关闭的，电销员要看到自己和组长的 2019.08.29
-				if (params.getStatus() == 5 && !admin.getRoles().contains(9)) {
+				//已关闭工单，电销员要看到自己和组长的 2019.08.29
+				if (params.getStatus() == 5) {
 					Admin findAdmin = MapperManager.adminMapper.selectByPrimaryKey(admin.getAdminid());
 					if (findAdmin.getOrgId() != null) {
-						params.setAdminid(null);
-
 						OrgDto orgParam = new OrgDto();
 						orgParam.setId(findAdmin.getOrgId());
 						OrgDto findOrg = orgService.findOrg(orgParam);
@@ -140,18 +146,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 					} else {
 						throw new LssException(ResponseCode.parameterError, "电销员未分配组织");
 					}
-				} //// 关闭的，电销员要看到自己和组长的 2019.08.29 end
+				}else {
+					//其他状态工单,电销员只能看到自己的
+					params.setAdminid(admin.getAdminid());
+				}
 			}
-
-			if (admin.getRoles().contains(4) || admin.getRoles().contains(5) || admin.getRoles().contains(6)) {
-				params.setClinicid(admin.getClinicid());
-			}
-			if (params.getStatus() == 3 || params.getStatus() == 4) {
-				if (admin.getRoles().contains(6))
-					params.setDoctorid(admin.getAdminid());
-			}
-
-			if (admin.getRoles().contains(9)) {// 电销组长 ，看到自己和下属的
+			//2.角色为电销组长 ，看到自己和下属的
+			if (admin.getRoles().contains(9) && !admin.getRoles().contains(3)) {
 				Admin findAdmin = MapperManager.adminMapper.selectByPrimaryKey(admin.getAdminid());
 				if (findAdmin.getOrgId() != null) {
 					// 如果没有用所属人查询就查小组所有成员
@@ -161,14 +162,15 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 						if (adminids.size() == 0) {// 没下属，则给一个不存在的账号 避免拿了所有员工数据
 							adminids.add(-1);
 						}
-						params.setAdminids(adminids);
+						if (null == params.getAdminid()) {
+							params.setAdminids(adminids);
+						}
 					}
 				} else {
 					throw new LssException(ResponseCode.parameterError, "电销组长未分配组织");
 				}
 			}
-
-			// 同时拥有电销组长,电销员两个角色
+			//3.同时拥有电销组长,电销员两个角色
 			if (admin.getRoles().contains(9) && admin.getRoles().contains(3)) {
 				Admin findAdmin = MapperManager.adminMapper.selectByPrimaryKey(admin.getAdminid());
 				if (findAdmin.getOrgId() != null) {
@@ -179,13 +181,22 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 						if (adminids.size() == 0) {// 没下属，则给一个不存在的账号 避免拿了所有员工数据
 							adminids.add(-1);
 						}
-						params.setAdminids(adminids);
+						if (null == params.getAdminid()) {
+							params.setAdminids(adminids);
+						}
 					}
 				} else {
 					throw new LssException(ResponseCode.parameterError, "电销组长未分配组织");
 				}
 			}
 
+			if (admin.getRoles().contains(4) || admin.getRoles().contains(5) || admin.getRoles().contains(6)) {
+				params.setClinicid(admin.getClinicid());
+			}
+			if (params.getStatus() == 3 || params.getStatus() == 4) {
+				if (admin.getRoles().contains(6))
+					params.setDoctorid(admin.getAdminid());
+			}
 		}
 		if (params.getStart() != null) {
 			params.setStart(DateUtils.getDateDay(params.getStart()));
@@ -414,6 +425,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		case 3:
 			sb.append("已到店");
 			break;
+		case 4:
+			sb.append("已成交,本次新增将重新创建工单,可以继续新增并创建工单");
+			break;
 		case 5:
 			sb.append("已关闭");
 			break;
@@ -437,29 +451,33 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	public ReturnVo save(UserOrderParams params, LoginAdmin admin) {
 		ReturnVo result = new ReturnVo();
 		// 验证用户信息
-		String msg = ServiceManager.userService.checkUser(params.getUser());
-		if (!"".equals(msg)) {
-			result.setResult(ResponseCode.parameterError);
-			result.setMsg(msg);
-			return result;
+		if (null != params.getUser()) {
+			String msg = ServiceManager.userService.checkUser(params.getUser());
+			if (!"".equals(msg)) {
+				result.setResult(ResponseCode.parameterError);
+				result.setMsg(msg);
+				return result;
+			}
 		}
 		WorkOrder order = params.getOrder();
 		if (order == null) {
 			order = new WorkOrder();
 		}
-		
-		if (params.getUser().getUserid() != null && ObjectUtil.isEmpty(order.getOrderno())) {
+
+		if (params.getUser() != null && params.getUser().getUserid() != null && ObjectUtil.isEmpty(order.getOrderno())) {
 			// 验证用户是否有未完成的工单
 			WorkOrder userOrder = MapperManager.workOrderMapper.queryWorkOrder(params.getUser().getUserid());
 			if (userOrder != null) {
 				result.setResult(ResponseCode.failure);
 				result.setMsg(workOrderExistMsg(userOrder, null));
 				return result;
+			}else {
+				result.setMsg("该手机号已有成交工单，本次将创建新工单");
 			}
 		}
 		Date dt = new Date();
 		// 添加/编辑用户信息
-		if (params.getUser().getUserid() == null) {
+		if (params.getUser() != null && params.getUser().getUserid() == null) {
 			// 新增用户
 			if (MapperManager.userMapper.checkPhone(params.getUser().getPhone()) > 0) {
 				result.setResult(ResponseCode.failure);
@@ -478,21 +496,23 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			params.getUser().setCreatetime(dt);
 			MapperManager.userMapper.insertSelective(params.getUser());
 		} else {
-			// 修改微信则检测微信是否重复 lhy 2019年6月20日
-			if (StringUtils.isNotEmpty(params.getUser().getNoWxAlias())) {
-				User findUser = MapperManager.userMapper.queryByNoWxAlias(params.getUser().getNoWxAlias());
-				if (findUser != null && !findUser.getUserid().equals(params.getUser().getUserid())) {
-					result.setResult(ResponseCode.failure);
-					result.setMsg("微信号已存在");
-					return result;
+			if (null != params.getUser()) {
+				// 修改微信则检测微信是否重复 lhy 2019年6月20日
+				if (StringUtils.isNotEmpty(params.getUser().getNoWxAlias())) {
+					User findUser = MapperManager.userMapper.queryByNoWxAlias(params.getUser().getNoWxAlias());
+					if (findUser != null && !findUser.getUserid().equals(params.getUser().getUserid())) {
+						result.setResult(ResponseCode.failure);
+						result.setMsg("微信号已存在");
+						return result;
+					}
 				}
+				// 修改用户
+				params.getUser().setPhone(null);
+				params.getUser().setPassword(null);
+				params.getUser().setStatus(null);
+				params.getUser().setCreatetime(null);
+				MapperManager.userMapper.updateByPrimaryKeySelective(params.getUser());
 			}
-			// 修改用户
-			params.getUser().setPhone(null);
-			params.getUser().setPassword(null);
-			params.getUser().setStatus(null);
-			params.getUser().setCreatetime(null);
-			MapperManager.userMapper.updateByPrimaryKeySelective(params.getUser());
 		}
 		// 判断是否是预约状态
 		if (order.getClinicid() != null && order.getReservedate() != null
@@ -525,7 +545,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			}
 		}
 		result.setResult(ResponseCode.success);
-		result.setMsg(ResponseCode.successMsg);
 		return result;
 	}
 
@@ -549,7 +568,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			result.setMsg("请选择分配工单");
 			return result;
 		}
-		params.setAllottime(new Date());// 最新分配时间 2019.08.12 v1.4
+		//已关闭工单批量分配时不更新分配时间
+		if(null != params.getStatus() && 5 != params.getStatus()) {
+			params.setAllottime(new Date());// 最新分配时间 2019.08.12 v1.4
+		}
 		if (MapperManager.workOrderMapper.batchassignWorkOrder(params) > 0) {
 			// 插入工单记录
 			for (String orderno : params.getOrdernos()) {
@@ -616,7 +638,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		order.setDoctorid(0);
 		if (MapperManager.workOrderMapper.followupWorkOrder(order) > 0) {
 			// 添加记录
-			insertWorkRecord(order.getOrderno(), admin.getAdminid(), "跟进记录:"+order.getComplaint(), order.getFollowup());
+			insertWorkRecord(order.getOrderno(), admin.getAdminid(), "跟进记录:" + order.getComplaint(),
+					order.getFollowup());
 			result.setResult(ResponseCode.success);
 			result.setMsg(ResponseCode.successMsg);
 		} else {
@@ -759,7 +782,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			result.setMsg("请选择医生");
 			return result;
 		}
-		order.setArrivaltime(new Date());
+		if (null == order.getArrivaltime()) {
+			order.setArrivaltime(new Date());
+		}
 		if (MapperManager.workOrderMapper.arrivals(order) > 0) {
 			insertWorkRecord(order.getOrderno(), admin.getAdminid(), "已到店", null);
 			result.setResult(ResponseCode.success);
@@ -780,10 +805,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			result.setMsg(ResponseCode.parameterErrorMsg);
 			return result;
 		}
-		if (order.getProjectid() == null) {
+		if (order.getProjectid2() == null) {
 			result.setResult(ResponseCode.parameterError);
 			result.setMsg("请选择成交项目");
 			return result;
+		}
+		if (null == order.getDealTime()) {
+			order.setDealTime(new Date());
 		}
 		if (MapperManager.workOrderMapper.transaction(order) > 0) {
 			// 跟进记录
@@ -919,6 +947,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if (ObjectUtil.isEmpty(params.getOrdernos())) {
 			result.setResult(ResponseCode.parameterError);
 			result.setMsg("请选择分配工单");
+			return result;
+		}
+		//2019-12-25 需求:如果工单被共享时不允许分配
+		if(MapperManager.workOrderMapper.checkIsOffer(params) > 0) {
+			result.setResult(ResponseCode.failure);
+			result.setMsg("存在共享工单,不允许转移");
 			return result;
 		}
 
@@ -1302,17 +1336,17 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	@Override
 	public ReturnVo offerOrder(WorkOrderParams params, LoginAdmin loginAdmin) {
-		log.info("offerOrder(WorkOrderParams params, LoginAdmin loginAdmin) - start", params,loginAdmin);
+		log.info("offerOrder(WorkOrderParams params, LoginAdmin loginAdmin) - start", params, loginAdmin);
 		ReturnVo returnVo = new ReturnVo();
 		try {
-			if(null==params.getAdminid()) {
+			if (null == params.getAdminid()) {
 				params.setAdminid(loginAdmin.getAdminid());
 			}
-			//首先判断所选工单是本人的工单(通过工单号查询所属用户)
+			// 首先判断所选工单是本人的工单(通过工单号查询所属用户)
 			List<Integer> adminids = MapperManager.workOrderMapper.findAdminIds(params);
-			if(adminids!=null) {
+			if (adminids != null) {
 				for (Integer adminid : adminids) {
-					if(adminid!=loginAdmin.getAdminid()) {
+					if (adminid != loginAdmin.getAdminid()) {
 						returnVo.setResult(ResponseCode.failure);
 						returnVo.setMsg("只允许共享自己的工单!");
 						return returnVo;
@@ -1322,34 +1356,34 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			List<String> ordernos = params.getOrdernos();
 			List<Integer> adminid = params.getAdminids();
 			StringBuilder sb = new StringBuilder();
-			for (int i=0;i<adminid.size();i++) {
-				if(i==0) {
+			for (int i = 0; i < adminid.size(); i++) {
+				if (i == 0) {
 					sb.append(adminid.get(i));
-				}else {
+				} else {
 					sb.append(",").append(adminid.get(i));
 				}
 			}
-			//我共享的
+			// 我共享的
 			params.setFromMe(params.getAdminid().toString());
-			//共享给我的
+			// 共享给我的
 			params.setToMe(sb.toString());
 			for (String orderNo : ordernos) {
 				params.setOrderNo(orderNo);
 				MapperManager.workOrderMapper.offerWorkOrder(params);
-				
-				//最近跟进时间及操作
+
+				// 最近跟进时间及操作
 				WorkOrder updateWorkOrder = new WorkOrder();
 				updateWorkOrder.setOrderno(orderNo);
 				updateWorkOrder.setFollowuptime(new Date());
-				updateWorkOrder.setFollowupremarks(loginAdmin.getName()+" 新增客户共享同事:"+params.getAdminNames());
+				updateWorkOrder.setFollowupremarks(loginAdmin.getName() + " 新增客户共享同事:" + params.getAdminNames());
 				MapperManager.workOrderMapper.updateByPrimaryKeySelective(updateWorkOrder);
-				
-				//新增工单流程记录
+
+				// 新增工单流程记录
 				WorkRecord record = new WorkRecord();
 				record.setAdminid(params.getAdminid());
 				record.setOrderno(orderNo);
 				record.setCreatetime(new Date());
-				record.setContent(loginAdmin.getName()+" 新增客户共享同事:"+params.getAdminNames());
+				record.setContent(loginAdmin.getName() + " 新增客户共享同事:" + params.getAdminNames());
 				MapperManager.workRecordMapper.insertSelective(record);
 			}
 			returnVo.setResult(ResponseCode.success);
@@ -1365,12 +1399,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	@Override
 	public ReturnVo offerToMe(WorkOrderParams params) {
-		log.debug("offerToMe(WorkOrderParams params = {})-start",params);
+		log.debug("offerToMe(WorkOrderParams params = {})-start", params);
 		ReturnVo returnVo = new ReturnVo();
 		try {
 			int count = MapperManager.workOrderMapper.offerToMeCount(params);
 			returnVo.setTotal(count);
-			if(count>0) {
+			if (count > 0) {
 				List<WorkOrderVo> list = MapperManager.workOrderMapper.offerToMe(params);
 				returnVo.setObj(list);
 			}
@@ -1387,11 +1421,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	@Override
 	public ReturnVo offerFromMe(WorkOrderParams params) {
-		log.debug("offerFromMe(WorkOrderParams params = {})-start",params);
+		log.debug("offerFromMe(WorkOrderParams params = {})-start", params);
 		ReturnVo returnVo = new ReturnVo();
 		try {
 			int count = MapperManager.workOrderMapper.offerFromMeCount(params);
-			if(count>0) {
+			if (count > 0) {
 				returnVo.setTotal(count);
 				List<WorkOrder> list = MapperManager.workOrderMapper.offerFromMe(params);
 				returnVo.setObj(list);
@@ -1408,27 +1442,27 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
-	public ReturnVo cancleOffer(WorkOrderParams params,LoginAdmin loginAdmin) {
-		log.debug("cancleOffer(WorkOrderParams params = {})-start",params);
+	public ReturnVo cancleOffer(WorkOrderParams params, LoginAdmin loginAdmin) {
+		log.debug("cancleOffer(WorkOrderParams params = {})-start", params);
 		ReturnVo returnVo = new ReturnVo();
 		try {
 			List<String> ordernos = params.getOrdernos();
 			for (String orderno : ordernos) {
 				params.setOrderNo(orderno);
 				MapperManager.workOrderMapper.cancleOffer(params);
-				
-				//最近跟进时间及操作
+
+				// 最近跟进时间及操作
 				WorkOrder updateWorkOrder = new WorkOrder();
 				updateWorkOrder.setOrderno(orderno);
 				updateWorkOrder.setFollowuptime(new Date());
-				updateWorkOrder.setFollowupremarks(loginAdmin.getName()+" 取消共享工单");
+				updateWorkOrder.setFollowupremarks(loginAdmin.getName() + " 取消共享工单");
 				MapperManager.workOrderMapper.updateByPrimaryKeySelective(updateWorkOrder);
-				
+
 				WorkRecord record = new WorkRecord();
 				record.setAdminid(params.getAdminid());
 				record.setCreatetime(new Date());
 				record.setOrderno(orderno);
-				record.setContent(loginAdmin.getName()+" 取消共享工单");
+				record.setContent(loginAdmin.getName() + " 取消共享工单");
 				MapperManager.workRecordMapper.insertSelective(record);
 			}
 			returnVo.setResult(ResponseCode.success);
@@ -1440,6 +1474,358 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			returnVo.setMsg(ResponseCode.failureMsg);
 			return returnVo;
 		}
+	}
+
+	@Override
+	public ReturnVo userCount(WorkOrderParams params) {
+		log.debug("userCount(WorkOrderParams params = {}) -start", params);
+		ReturnVo returnVo = new ReturnVo();
+		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat newSFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			if (null != params.getAllottimeStart()) {
+				String format = sFormat.format(params.getAllottimeStart()) + " 00:00:00";
+				params.setAllottimeStart(newSFormat.parse(format));
+			}
+			if (null != params.getAllottimeEnd()) {
+				String format = sFormat.format(params.getAllottimeEnd()) + " 23:59:59";
+				params.setAllottimeEnd(newSFormat.parse(format));
+			}
+			if (null != params.getSourcedateStart()) {
+				String format = sFormat.format(params.getSourcedateStart()) + " 00:00:00";
+				params.setSourcedateStart(newSFormat.parse(format));
+			}
+			if (null != params.getSourcedateEnd()) {
+				String format = sFormat.format(params.getSourcedateEnd()) + " 23:59:59";
+				params.setSourcedateEnd(newSFormat.parse(format));
+			}
+			if(org.apache.commons.lang.StringUtils.isNotEmpty(params.getLevel())) {
+				String[] levels = params.getLevel().split(",");
+				List<String> levelList = new ArrayList<>();
+				for (String string : levels) {
+					levelList.add(string);
+				}
+				params.setLevelList(levelList);
+			}
+
+			int count = MapperManager.workOrderMapper.userCount(params);
+			returnVo.setTotal(count);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			if (count > 0) {
+				List<UserCount> list = MapperManager.workOrderMapper.userCountList(params);
+				int sum = 0;
+				for (UserCount userCount : list) {
+					sum += userCount.getNumber();
+				}
+				returnVo.setMsg(sum + "");
+				returnVo.setObj(list);
+			}
+		} catch (Exception e) {
+			log.error("查询用户统计信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo exportUserCount(WorkOrderExcelParams workOrderExcelParams) {
+		log.debug("exportUserCount(WorkOrderParams params = {}) -start", workOrderExcelParams);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			List<UserCountExeclVo> list = MapperManager.workOrderMapper.exportUserCountList(workOrderExcelParams);
+			returnVo.setObj(list);
+		} catch (Exception e) {
+			log.error("导出用户统计信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo exportUserDetail(WorkOrderExcelParams workOrderExcelParams) {
+		log.debug("exportUserDetail(WorkOrderParams params = {}) -start", workOrderExcelParams);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			List<UserDetailExeclVo> list = MapperManager.workOrderMapper.exportUserDetail(workOrderExcelParams);
+			returnVo.setObj(list);
+		} catch (Exception e) {
+			log.error("导出用户统计详情错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo levelCount(WorkOrderParams params) {
+		log.debug("levelCount(WorkOrderParams params = {}) -start", params);
+		ReturnVo returnVo = new ReturnVo();
+		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat newSFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			if (null != params.getAllottimeStart()) {
+				String format = sFormat.format(params.getAllottimeStart()) + " 00:00:00";
+				params.setAllottimeStart(newSFormat.parse(format));
+			}
+			if (null != params.getAllottimeEnd()) {
+				String format = sFormat.format(params.getAllottimeEnd()) + " 23:59:59";
+				params.setAllottimeEnd(newSFormat.parse(format));
+			}
+			if (null != params.getSourcedateStart()) {
+				String format = sFormat.format(params.getSourcedateStart()) + " 00:00:00";
+				params.setSourcedateStart(newSFormat.parse(format));
+			}
+			if (null != params.getSourcedateEnd()) {
+				String format = sFormat.format(params.getSourcedateEnd()) + " 23:59:59";
+				params.setSourcedateEnd(newSFormat.parse(format));
+			}
+			if(org.apache.commons.lang.StringUtils.isNotEmpty(params.getLevel())) {
+				String[] levels = params.getLevel().split(",");
+				List<String> levelList = new ArrayList<>();
+				for (String string : levels) {
+					levelList.add(string);
+				}
+				params.setLevelList(levelList);
+			}
+
+			int count = MapperManager.workOrderMapper.levelCount(params);
+			returnVo.setTotal(count);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			if (count > 0) {
+				List<UserCount> list = MapperManager.workOrderMapper.levelCountList(params);
+				returnVo.setObj(list);
+			}
+		} catch (Exception e) {
+			log.error("查询用户意愿统计信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo userSource(WorkOrderParams params) {
+		log.debug("userSource(WorkOrderParams params = {}) - start",params);
+		ReturnVo returnVo = new ReturnVo();
+		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat newSFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			if (null != params.getSourcedateStart()) {
+				String format = sFormat.format(params.getSourcedateStart()) + " 00:00:00";
+				params.setSourcedateStart(newSFormat.parse(format));
+			}
+			if (null != params.getSourcedateEnd()) {
+				String format = sFormat.format(params.getSourcedateEnd()) + " 23:59:59";
+				params.setSourcedateEnd(newSFormat.parse(format));
+			}
+			int count = MapperManager.workOrderMapper.userSourceCount(params);
+			returnVo.setTotal(count);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			if(count > 0) {
+				List<UserSource> list = MapperManager.workOrderMapper.userSourceList(params);
+				returnVo.setObj(list);
+			}
+		} catch (Exception e) {
+			log.error("查询用户意愿统计信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo userSourceTotal(WorkOrderParams params) {
+		log.debug("userSourceTotal(WorkOrderParams params = {}) - start",params);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			List<UserSource> list = MapperManager.workOrderMapper.userSourceTotal(params);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			returnVo.setObj(list);
+		} catch (Exception e) {
+			log.error("查询用户意愿总计统计信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo exportUserSource(WorkOrderExcelParams workOrderExcelParams) {
+		log.debug("exportUserSource(WorkOrderExcelParams workOrderExcelParams = {}) -start",workOrderExcelParams);
+		ReturnVo returnVo = new ReturnVo();
+		SimpleDateFormat newSFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			WorkOrderParams params = new WorkOrderParams();
+			params.setSourceid(workOrderExcelParams.getSourceid());
+			params.setSourceid2(workOrderExcelParams.getSourceid2());
+			if (null != workOrderExcelParams.getSourcedateStart()) {
+				params.setSourcedateStart(newSFormat.parse(workOrderExcelParams.getSourcedateStart()));
+			}
+			if (null != workOrderExcelParams.getSourcedateEnd()) {
+				params.setSourcedateEnd(newSFormat.parse(workOrderExcelParams.getSourcedateEnd()));
+			}
+			List<UserSource> list = MapperManager.workOrderMapper.exportUserSourceList(params);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			returnVo.setObj(list);
+		} catch (Exception e) {
+			log.error("查询用户意愿总计统计信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo userArrival(UserArriavlParam params) {
+		log.debug("userArrival(UserArriavlParam params = {}) - start");
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			if(null != params.getArriavlDateStart()) {
+				String start = sft.format(params.getArriavlDateStart()).substring(0, 10) + " 00:00:00";
+				params.setArriavlDateStart(sft.parse(start));
+			}
+			if(null != params.getArriavlDateEnd()) {
+				String end = sft.format(params.getArriavlDateEnd()).substring(0, 10)+ " 23:59:59";
+				params.setArriavlDateEnd(sft.parse(end));
+			}
+			int count = MapperManager.workOrderMapper.userArrivalCount(params);
+			returnVo.setTotal(count);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+			if(count>0) {
+				List<UserArriavl> list = MapperManager.workOrderMapper.userArrivalList(params);
+				returnVo.setObj(list);
+			}
+		} catch (Exception e) {
+			log.error("查询用户意愿总计统计信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo exportUserArrival(UserArriavlExcelParam userArriavlExcelParam) {
+		log.debug("exportUserArrival(UserArriavlExcelParam userArriavlExcelParam = {}) - start",userArriavlExcelParam);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			UserArriavlParam params = new UserArriavlParam();
+			params.setAge(userArriavlExcelParam.getAge());
+			params.setSourceid(userArriavlExcelParam.getSourceid());
+			params.setSourceid2(userArriavlExcelParam.getSourceid2());
+			params.setSex(userArriavlExcelParam.getSex());
+			//来源日期
+			if(null != userArriavlExcelParam.getSourcedateStart()) {
+				params.setSourcedateStart(DateUtils.format(userArriavlExcelParam.getSourcedateStart(), DateUtils.YYYYMMDD));
+			}
+			if(null != userArriavlExcelParam.getSourcedateEnd()) {
+				params.setSourcedateEnd(DateUtils.format(userArriavlExcelParam.getSourcedateEnd(), DateUtils.YYYYMMDD));
+			}
+			//到店日期
+			if(null != userArriavlExcelParam.getArriavlDateStart()) {
+				params.setArriavlDateStart(DateUtils.format(userArriavlExcelParam.getArriavlDateStart().substring(0, 10) + " 00:00:00", DateUtils.YYYYMMDDHHMMSS));
+			}
+			if(null != userArriavlExcelParam.getArriavlDateEnd()) {
+				params.setArriavlDateEnd(DateUtils.format(userArriavlExcelParam.getArriavlDateEnd().substring(0, 10) + " 23:59:59", DateUtils.YYYYMMDDHHMMSS));
+			}
+			List<UserArriavl> list = MapperManager.workOrderMapper.exportUserArrival(params);
+			returnVo.setObj(list);
+		} catch (Exception e) {
+			log.error("查询用户到店信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo userArrivalSex(UserArriavlParam params) {
+		log.debug("userArrivalSex(UserArriavlParam params = {}) - start",params);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			if(null != params.getArriavlDateStart()) {
+				String start = sft.format(params.getArriavlDateStart()).substring(0, 10) + " 00:00:00";
+				params.setArriavlDateStart(sft.parse(start));
+			}
+			if(null != params.getArriavlDateEnd()) {
+				String end = sft.format(params.getArriavlDateEnd()).substring(0, 10)+ " 23:59:59";
+				params.setArriavlDateEnd(sft.parse(end));
+			}
+			List<UserArriavl> list = MapperManager.workOrderMapper.userArrivalSex(params);
+			returnVo.setObj(list);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+		} catch (Exception e) {
+			log.error("查询用户到店性别信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo userArrivalProject(UserArriavlParam params) {
+		log.debug("userArrivalProject(UserArriavlParam params = {}) - start",params);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			if(null != params.getArriavlDateStart()) {
+				String start = sft.format(params.getArriavlDateStart()).substring(0, 10) + " 00:00:00";
+				params.setArriavlDateStart(sft.parse(start));
+			}
+			if(null != params.getArriavlDateEnd()) {
+				String end = sft.format(params.getArriavlDateEnd()).substring(0, 10)+ " 23:59:59";
+				params.setArriavlDateEnd(sft.parse(end));
+			}
+			List<UserArriavl> list = MapperManager.workOrderMapper.userArrivalProject(params);
+			returnVo.setObj(list);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+		} catch (Exception e) {
+			log.error("查询用户意向信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
+	}
+
+	@Override
+	public ReturnVo userArrivalAge(UserArriavlParam params) {
+		log.debug("userArrivalAge(UserArriavlParam params = {}) -start",params);
+		ReturnVo returnVo = new ReturnVo();
+		try {
+			SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			if(null != params.getArriavlDateStart()) {
+				String start = sft.format(params.getArriavlDateStart()).substring(0, 10) + " 00:00:00";
+				params.setArriavlDateStart(sft.parse(start));
+			}
+			if(null != params.getArriavlDateEnd()) {
+				String end = sft.format(params.getArriavlDateEnd()).substring(0, 10)+ " 23:59:59";
+				params.setArriavlDateEnd(sft.parse(end));
+			}
+			List<UserArriavl> list = MapperManager.workOrderMapper.userArrivalAge(params);
+			returnVo.setObj(list);
+			returnVo.setResult(ResponseCode.success);
+			returnVo.setMsg(ResponseCode.successMsg);
+		} catch (Exception e) {
+			log.error("查询用户年龄信息错误!", e);
+			returnVo.setResult(ResponseCode.failure);
+			returnVo.setMsg(ResponseCode.failureMsg);
+		}
+		return returnVo;
 	}
 
 }

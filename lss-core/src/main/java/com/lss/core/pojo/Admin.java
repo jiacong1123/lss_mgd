@@ -41,7 +41,7 @@ public class Admin {
     /** ec系统用户ID*/
     private String ecUserId;
     
-    /** ec系统用户ID*/
+    /** 超脑云系统用户ID*/
     private String microUserId;
     
     

@@ -7,7 +7,10 @@ import com.lss.core.vo.ReturnVo;
 import com.lss.core.vo.admin.LoginAdmin;
 import com.lss.core.vo.admin.WorkOrderVo;
 import com.lss.core.vo.admin.WorkRecordVo;
+import com.lss.core.vo.admin.params.UserArriavlExcelParam;
+import com.lss.core.vo.admin.params.UserArriavlParam;
 import com.lss.core.vo.admin.params.UserOrderParams;
+import com.lss.core.vo.admin.params.WorkOrderExcelParams;
 import com.lss.core.vo.admin.params.WorkOrderParams;
 
 public interface WorkOrderService {
@@ -222,4 +225,29 @@ public interface WorkOrderService {
 	ReturnVo offerFromMe(WorkOrderParams params);
 
 	ReturnVo cancleOffer(WorkOrderParams params, LoginAdmin loginAdmin);
+
+	ReturnVo userCount(WorkOrderParams params);
+
+	ReturnVo exportUserCount(WorkOrderExcelParams workOrderExcelParams);
+
+	ReturnVo exportUserDetail(WorkOrderExcelParams workOrderExcelParams);
+
+	ReturnVo levelCount(WorkOrderParams params);
+
+	ReturnVo userSource(WorkOrderParams params);
+
+	ReturnVo userSourceTotal(WorkOrderParams params);
+
+	ReturnVo exportUserSource(WorkOrderExcelParams workOrderExcelParams);
+
+	ReturnVo userArrival(UserArriavlParam params);
+
+	ReturnVo exportUserArrival(UserArriavlExcelParam userArriavlExcelParam);
+
+	ReturnVo userArrivalSex(UserArriavlParam params);
+
+	ReturnVo userArrivalProject(UserArriavlParam params);
+
+	ReturnVo userArrivalAge(UserArriavlParam params);
+
 }

@@ -13,7 +13,9 @@ public class WorkOrder {
 
     private Integer clinicid;
 
-    private Integer projectid;
+    private Integer projectid;//预约项目
+    
+    private Integer projectid2;//成交项目
 
     private Integer adminid;
 
@@ -67,6 +69,8 @@ public class WorkOrder {
     private Long debtamt;
     /** 收费时间*/
     private Date payTime;
+    /** 成交时间*/
+    private Date dealTime;
     
     /** 最新跟进时间*/
     private Date followuptime;
@@ -82,7 +86,23 @@ public class WorkOrder {
     
     
 
-    public String getIsReturn() {
+    public Integer getProjectid2() {
+		return projectid2;
+	}
+
+	public void setProjectid2(Integer projectid2) {
+		this.projectid2 = projectid2;
+	}
+
+	public Date getDealTime() {
+		return dealTime;
+	}
+
+	public void setDealTime(Date dealTime) {
+		this.dealTime = dealTime;
+	}
+
+	public String getIsReturn() {
 		return isReturn;
 	}
 

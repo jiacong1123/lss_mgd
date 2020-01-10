@@ -4,6 +4,7 @@ import com.lss.core.pojo.User;
 
 public class UserVo extends User {
 	private String sourcename;
+	private String sourcename2;
 	private String msg;
 	private String orderno;
 	
@@ -15,6 +16,15 @@ public class UserVo extends User {
 	/**当前进行中的工单*/
 	private WorkOrderVo order;
 	
+	
+	public String getSourcename2() {
+		return sourcename2;
+	}
+
+	public void setSourcename2(String sourcename2) {
+		this.sourcename2 = sourcename2;
+	}
+
 	public String getSourcename() {
 		return sourcename;
 	}

@@ -119,7 +119,7 @@ public class SystemConstant {
 		domainWhiteList.add("http://bms.lesasa.com");
 		domainWhiteList.add("http://m.lesasa.wang");
 		domainWhiteList.add("http://www.lesasa.wang");
-		domainWhiteList.add("http://www.lesasa.com");
+		//domainWhiteList.add("http://www.lesasa.com");
 		domainWhiteList.add("http://hyl.leshasha.com");
 		domainWhiteList.add("http://zwcs.leshasha.com");
 		domainWhiteList.add("http://www.leshasha.com");

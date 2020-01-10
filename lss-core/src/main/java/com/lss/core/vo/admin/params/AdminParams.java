@@ -19,7 +19,19 @@ public class AdminParams extends PageParams {
 	private List<Integer> adminids;
     /** 员工名称*/
     private String adminName;
+    /** 部门名称*/
+    private String orgName;
     
+    
+    
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+
 	public String getName() {
 		return name;
 	}
